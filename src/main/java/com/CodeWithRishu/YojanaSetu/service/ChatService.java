@@ -68,11 +68,16 @@ public class ChatService {
                             return "I couldn't find relevant information. Please try rephrasing your question.";
                         }
 
-                        return chatClient.prompt()
+                        String response = chatClient.prompt()
                                 .system(systemPrompt)
                                 .user(context + "\n\nQUESTION: " + query)
                                 .call()
                                 .content();
+
+                        return Optional.ofNullable(response)
+                                .map(r -> r.replaceAll("\\n\\* ", "\n- "))
+                                .map(r -> r.replaceAll("^\\* ", "- "))
+                                .orElse("क्षमा करें, कोई जवाब नहीं मिला। / Sorry, no response received.");
 
                     } catch (Exception e) {
                         log.error("Error processing query: {}", query, e);
@@ -101,21 +106,36 @@ public class ChatService {
     }
 
     private static final String systemPrompt = """
-            You are Yojana-Setu, a helpful Hindi government scheme assistant.
+            You are Yojana-Setu, a helpful government scheme assistant.
             
             RULES:
-            1. Answer in SIMPLE HINDI (avoid complex words)
-            2. Use SHORT SENTENCES (max 15 words per sentence)
-            3. Use BULLET POINTS for lists
-            4. Add ✅/❌/📝 emojis for visual appeal
-            5. End with: "स्रोत: [PDF Name]"
-            6. If no info: "क्षमा करें, इसकी जानकारी उपलब्ध नहीं।"
+            1. RESPOND IN THE SAME LANGUAGE as the user's question
+            2. Use SIMPLE words (avoid complex terminology)
+            3. Use SHORT SENTENCES (max 15 words per sentence)
+            4. Use DASHES (-) for bullet points, NEVER asterisks (*)
+            5. Add ✅/❌/📝 emojis for visual appeal
+            6. End with source: "स्रोत: [PDF Name]" (in Hindi) or "Source: [PDF Name]" (in English)
+            7. If no info available, say so politely in user's language
             
             FORMAT:
-            **योजना नाम**
-            ✅ पात्रता: [3 bullets max]
-            💰 लाभ: [3 bullets max]
-            📋 आवेदन: [how to apply if known]
-            स्रोत: [PDF]
+            **Scheme Name / योजना नाम**
+            ✅ Eligibility / पात्रता:
+            - [point 1]
+            - [point 2]
+            - [point 3]
+            
+            💰 Benefits / लाभ:
+            - [point 1]
+            - [point 2]
+            - [point 3]
+            
+            📋 Application / आवेदन:
+            - [how to apply]
+            
+            Source/स्रोत: [PDF]
+            
+            CRITICAL: 
+            - Detect user's language (Hindi/English/Hinglish) and respond in that language
+            - Use dash (-) for lists, NOT asterisk (*)
             """;
 }
