@@ -5,347 +5,164 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
-
-    <!-- React & Dependencies -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-    <!-- Framer Motion -->
     <script src="https://unpkg.com/framer-motion@10/dist/framer-motion.js"></script>
-
-    <!-- Tesseract.js for OCR -->
     <script src='https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js'></script>
-
     <style>
+        :root {
+            --bg-body: #f1f5f9;
+            --bg-app: #ffffff;
+            --bg-chat: #f8fafc;
+            --bg-input: #ffffff;
+            --bg-bubble-bot: #f1f5f9;
+            --bg-bubble-user: #2563eb;
+            --bg-hover: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-bubble-bot: #1e293b;
+            --text-bubble-user: #ffffff;
+            --border-color: #e2e8f0;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --danger: #ef4444;
+            --success: #10b981;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-app: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+        body.dark {
+            --bg-body: #020617;
+            --bg-app: #0f172a;
+            --bg-chat: #020617;
+            --bg-input: #0f172a;
+            --bg-bubble-bot: #1e293b;
+            --bg-bubble-user: #3b82f6;
+            --bg-hover: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-bubble-bot: #f1f5f9;
+            --text-bubble-user: #ffffff;
+            --border-color: #1e293b;
+            --shadow-app: 0 25px 50px -12px rgb(0 0 0 / 0.5);
+        }
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
-
-        :root {
-            /* Light Theme */
-            --bg-primary: #ffffff;
-            --bg-secondary: #f9fafb;
-            --bg-tertiary: #f3f4f6;
-            --text-primary: #111827;
-            --text-secondary: #6b7280;
-            --text-tertiary: #9ca3af;
-            --border: #e5e7eb;
-            --shadow-color: rgba(0, 0, 0, 0.1);
-
-            /* Dark Theme */
-            --dark-bg-primary: #0f1419;
-            --dark-bg-secondary: #1a1f29;
-            --dark-bg-tertiary: #242b38;
-            --dark-text-primary: #f3f4f6;
-            --dark-text-secondary: #9ca3af;
-            --dark-text-tertiary: #6b7280;
-            --dark-border: #2d3748;
-            --dark-shadow-color: rgba(0, 0, 0, 0.5);
-
-            /* Accent Colors */
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --primary-light: #818cf8;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
-            background: var(--gradient-1);
-            min-height: 100vh;
-            overflow: hidden;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            transition: background 0.3s ease;
-        }
-
-        body.dark {
-            background: linear-gradient(135deg, #1a1f29 0%, #0f1419 100%);
-        }
-
-        /* Animated Background */
-        .bg-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.3;
-            animation: float 20s ease-in-out infinite;
-        }
-
-        .orb-1 {
-            width: 400px;
-            height: 400px;
-            background: var(--gradient-2);
-            top: -200px;
-            left: -200px;
-            animation-delay: 0s;
-        }
-
-        .orb-2 {
-            width: 500px;
-            height: 500px;
-            background: var(--gradient-3);
-            bottom: -250px;
-            right: -250px;
-            animation-delay: 5s;
-        }
-
-        .orb-3 {
-            width: 300px;
-            height: 300px;
-            background: var(--primary);
-            top: 50%;
-            left: 50%;
-            animation-delay: 10s;
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translate(0, 0) scale(1);
-            }
-            33% {
-                transform: translate(30px, -50px) scale(1.1);
-            }
-            66% {
-                transform: translate(-20px, 20px) scale(0.9);
-            }
-        }
-
-        /* Particles */
-        .particles {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-        }
-
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            animation: particle-float 15s linear infinite;
-        }
-
-        @keyframes particle-float {
-            0% {
-                transform: translateY(100vh) translateX(0);
-                opacity: 0;
-            }
-            10% {
-                opacity: 0.5;
-            }
-            90% {
-                opacity: 0.5;
-            }
-            100% {
-                transform: translateY(-100px) translateX(100px);
-                opacity: 0;
-            }
-        }
-
-        #root {
+            background-color: var(--bg-body);
+            color: var(--text-primary);
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 16px;
-            position: relative;
+            transition: background-color 0.3s ease;
+            -webkit-font-smoothing: antialiased;
+        }
+        .ambient-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at top right, rgba(37, 99, 235, 0.05), transparent 40%),
+            radial-gradient(circle at bottom left, rgba(37, 99, 235, 0.05), transparent 40%);
+            z-index: 0;
+            pointer-events: none;
+        }
+        body.dark .ambient-bg {
+            background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.1), transparent 40%),
+            radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.1), transparent 40%);
+        }
+        #root {
+            width: 100%;
+            height: 100%;
+            padding: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             z-index: 1;
         }
-
-        /* Glassmorphism */
-        .glass {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+        .btn-icon {
+            display: flex; align-items: center; justify-content: center;
+            width: 40px; height: 40px; border-radius: 8px;
+            border: 1px solid transparent; background: transparent;
+            color: var(--text-secondary); cursor: pointer;
+            transition: all 0.2s;
         }
-
-        .dark .glass {
-            background: rgba(15, 20, 25, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(203, 213, 225, 0.5);
-            border-radius: 10px;
-        }
-
-        .dark ::-webkit-scrollbar-thumb {
-            background: rgba(148, 163, 184, 0.3);
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(148, 163, 184, 0.7);
-        }
-
-        /* Shimmer effect */
-        @keyframes shimmer {
-            0% {
-                background-position: -1000px 0;
-            }
-            100% {
-                background-position: 1000px 0;
-            }
-        }
-
-        .shimmer {
-            background: linear-gradient(90deg,
-            transparent 0%,
-            rgba(255, 255, 255, 0.2) 50%,
-            transparent 100%);
-            background-size: 1000px 100%;
-            animation: shimmer 2s infinite;
-        }
-
-        /* Pulse animation */
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.8;
-                transform: scale(1.05);
-            }
-        }
-
-        /* Glow effect */
-        .glow {
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
-        }
-
-        .dark .glow {
-            box-shadow: 0 0 30px rgba(99, 102, 241, 0.7);
-        }
-
-        /* Ripple effect */
-        @keyframes ripple {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
-        }
+        .btn-icon:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .btn-icon.active { color: var(--primary); background: rgba(37, 99, 235, 0.1); }
+        input:focus { outline: none; }
+        select { -webkit-appearance: none; -moz-appearance: none; appearance: none; }
+        @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
     </style>
 </head>
 <body>
-<div class="bg-animation">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-    <div class="particles" id="particles"></div>
-</div>
+<div class="ambient-bg"></div>
 <div id="root"></div>
-
-<script>
-    // Create particles
-    const particlesContainer = document.getElementById('particles');
-    for (let i = 0; i < 30; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.animationDelay = Math.random() * 15 + 's';
-        particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
-        particlesContainer.appendChild(particle);
-    }
-</script>
-
 <script type="text/babel">
     const { useState, useEffect, useRef, useCallback } = React;
     const { motion, AnimatePresence } = Motion;
+    const API_BASE_URL = 'http://localhost:8080';
 
-    // ========== BACKEND CONFIGURATION ==========
-    // Change this to your Spring Boot backend URL
-    const API_BASE_URL = 'http://localhost:8080';  // ⚠️ Update this if your backend runs on different port
-    // ===========================================
+    const Icons = {
+        Bot: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg>,
+        User: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+        Send: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>,
+        Mic: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>,
+        Paperclip: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>,
+        Trash: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>,
+        Sun: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>,
+        Moon: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>,
+        Volume: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>,
+        VolumeX: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>,
+        Globe: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>,
+        Shield: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
+        Briefcase: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>,
+        Graduation: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>,
+        Heart: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>,
+        Home: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    };
 
-    // Language translations
     const translations = {
         en: {
             appTitle: 'Yojana-Setu',
-            appSubtitle: 'Your Intelligent Government Scheme Assistant',
-            aiActive: 'AI Assistant Active',
-            placeholder: 'Type your message...',
-            listening: 'Listening...',
-            welcomeTitle: '🙏 Namaste! I\'m here to help with government schemes',
-            welcomeSubtitle: 'Ask me anything about schemes, eligibility, or application process',
-            voiceEnabled: '🔊 Voice responses enabled',
-            voiceDisabled: '🔇 Voice responses disabled',
-            uploadSuccess: '✅ Document uploaded! Extracting text...',
-            uploadError: '❌ Upload failed. Please try again.',
-            ocrProcessing: '🔄 Processing with OCR...',
-            ocrSuccess: '✅ Text extracted successfully',
-            clearConfirm: 'Clear chat history?',
-            darkMode: 'Dark Mode',
-            lightMode: 'Light Mode'
+            appSubtitle: 'Government Scheme Assistant',
+            placeholder: 'Ask about any government scheme...',
+            welcomeTitle: 'How can I help you today?',
+            welcomeSubtitle: 'Ask me anything about eligibility, benefits, or the application process for Indian government schemes.',
+            uploadSuccess: 'Document attached. Extracting text...',
+            uploadError: 'Upload failed. Please ensure the file is valid.',
+            ocrSuccess: 'Text extracted from document',
         },
         hi: {
             appTitle: 'योजना-सेतु',
-            appSubtitle: 'आपका बुद्धिमान सरकारी योजना सहायक',
-            aiActive: 'AI सहायक सक्रिय',
-            placeholder: 'अपना संदेश लिखें...',
-            listening: 'सुन रहा हूँ...',
-            welcomeTitle: '🙏 नमस्ते! मैं यहाँ सरकारी योजनाओं में मदद के लिए हूँ',
-            welcomeSubtitle: 'योजनाओं, पात्रता या आवेदन के बारे में कुछ भी पूछें',
-            voiceEnabled: '🔊 आवाज प्रतिक्रिया सक्षम',
-            voiceDisabled: '🔇 आवाज प्रतिक्रिया बंद',
-            uploadSuccess: '✅ दस्तावेज़ अपलोड! टेक्स्ट निकाला जा रहा है...',
-            uploadError: '❌ अपलोड विफल। पुनः प्रयास करें।',
-            ocrProcessing: '🔄 OCR से प्रोसेस हो रहा है...',
-            ocrSuccess: '✅ टेक्स्ट सफलतापूर्वक निकाला गया',
-            clearConfirm: 'चैट इतिहास साफ़ करें?',
-            darkMode: 'डार्क मोड',
-            lightMode: 'लाइट मोड'
+            appSubtitle: 'सरकारी योजना सहायक',
+            placeholder: 'किसी भी सरकारी योजना के बारे में पूछें...',
+            welcomeTitle: 'आज मैं आपकी कैसे मदद कर सकता हूँ?',
+            welcomeSubtitle: 'भारतीय सरकारी योजनाओं के लिए पात्रता, लाभ या आवेदन प्रक्रिया के बारे में कुछ भी पूछें।',
+            uploadSuccess: 'दस्तावेज़ संलग्न। टेक्स्ट निकाला जा रहा है...',
+            uploadError: 'अपलोड विफल। कृपया सुनिश्चित करें कि फ़ाइल मान्य है।',
+            ocrSuccess: 'दस्तावेज़ से टेक्स्ट निकाला गया',
         }
     };
 
-    // Quick actions
-    const quickActions = [
-        { id: 1, icon: '💰', text: 'PM Kisan', query: 'PM Kisan Yojana details', gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
-        { id: 2, icon: '📚', text: 'Scholarship', query: 'student scholarship schemes', gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
-        { id: 3, icon: '🏥', text: 'Health', query: 'health insurance schemes', gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' },
-        { id: 4, icon: '🏠', text: 'Housing', query: 'housing schemes', gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' }
-    ];
-
-    // Scheme suggestions
     const schemeSuggestions = [
-        { id: 1, icon: '💰', title: 'PM Kisan Yojana', subtitle: 'Financial Benefits for Farmers', color: '#f093fb' },
-        { id: 2, icon: '📚', title: 'Scholarships', subtitle: 'Education Support', color: '#4facfe' },
-        { id: 3, icon: '🏥', title: 'Ayushman Bharat', subtitle: 'Health Insurance', color: '#43e97b' },
-        { id: 4, icon: '🏠', title: 'PMAY', subtitle: 'Housing Scheme', color: '#fa709a' }
+        { id: 1, icon: <Icons.Briefcase />, title: 'PM Kisan Samman Nidhi', query: 'Tell me about PM Kisan Yojana' },
+        { id: 2, icon: <Icons.Graduation />, title: 'Student Scholarships', query: 'What are the scholarship schemes for students?' },
+        { id: 3, icon: <Icons.Heart />, title: 'Ayushman Bharat', query: 'How to apply for Ayushman Bharat health card?' },
+        { id: 4, icon: <Icons.Home />, title: 'PM Awas Yojana', query: 'Am I eligible for PM Awas Yojana housing scheme?' }
     ];
 
-    // Main App Component
     function YojanaSetu() {
         const [messages, setMessages] = useState([]);
         const [inputValue, setInputValue] = useState('');
@@ -354,159 +171,102 @@
         const [darkMode, setDarkMode] = useState(false);
         const [voiceEnabled, setVoiceEnabled] = useState(true);
         const [isListening, setIsListening] = useState(false);
-        const [uploadedDocs, setUploadedDocs] = useState([]);
 
         const chatBoxRef = useRef(null);
-        const recognitionRef = useRef(null);
         const fileInputRef = useRef(null);
+        const recognitionRef = useRef(null);
 
         const t = (key) => translations[language]?.[key] || translations['en'][key];
 
-        // Toggle dark mode
         useEffect(() => {
-            if (darkMode) {
-                document.body.classList.add('dark');
-            } else {
-                document.body.classList.remove('dark');
-            }
+            if (darkMode) document.body.classList.add('dark');
+            else document.body.classList.remove('dark');
         }, [darkMode]);
 
-        // Scroll to bottom
-        const scrollToBottom = () => {
+        useEffect(() => {
             if (chatBoxRef.current) {
                 chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
             }
-        };
+        }, [messages, isTyping]);
 
-        useEffect(() => {
-            scrollToBottom();
-        }, [messages]);
-
-        // Add message
         const addMessage = useCallback((content, isUser = false) => {
-            const newMessage = {
-                id: Date.now(),
-                content,
-                isUser,
-                timestamp: new Date()
-            };
-            setMessages(prev => [...prev, newMessage]);
+            setMessages(prev => [...prev, { id: Date.now(), content, isUser, timestamp: new Date() }]);
         }, []);
 
-        // Send message
+        const handleVoiceToggle = () => {
+            setVoiceEnabled(prevState => {
+                const newState = !prevState;
+                if (!newState && window.speechSynthesis) {
+                    window.speechSynthesis.cancel();
+                }
+                return newState;
+            });
+        };
+
         const sendMessage = async () => {
             if (!inputValue.trim()) return;
-
             const userMessage = inputValue;
             setInputValue('');
             addMessage(userMessage, true);
-
             setIsTyping(true);
 
             try {
-                // Call Spring Boot backend API
-                console.log('Sending message to backend:', userMessage);
-
                 const response = await fetch(`${API_BASE_URL}/api/chat/ask?message=${encodeURIComponent(userMessage)}`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'text/plain'
-                    }
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'text/plain' }
                 });
 
-                console.log('Response status:', response.status);
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.text();
-                console.log('Response data:', data);
 
                 if (data && data.trim()) {
                     addMessage(data, false);
-
-                    // Speak if voice enabled
-                    if (voiceEnabled) {
-                        speakText(data);
+                    if (voiceEnabled && window.speechSynthesis) {
+                        window.speechSynthesis.cancel();
+                        const utterance = new SpeechSynthesisUtterance(data);
+                        utterance.lang = language === 'hi' ? 'hi-IN' : 'en-IN';
+                        window.speechSynthesis.speak(utterance);
                     }
-                } else {
-                    throw new Error('Empty response from server');
                 }
             } catch (error) {
-                console.error('Backend API Error:', error);
-                addMessage(`❌ Unable to connect to backend at ${API_BASE_URL}. Please ensure:\n• Backend is running on port 8080\n• CORS is enabled\n• Network connection is active`, false);
+                console.error('API Error:', error);
+                addMessage("I'm having trouble connecting to the server right now. Please ensure the backend is running.", false);
             } finally {
                 setIsTyping(false);
             }
         };
 
-        // Voice input
-        const startListening = () => {
+        const handleVoice = () => {
             if (!('webkitSpeechRecognition' in window)) {
-                addMessage('⚠️ Voice input not supported.', false);
+                alert('Voice input is not supported in this browser.');
                 return;
             }
-
+            if (isListening) {
+                recognitionRef.current?.stop();
+                return;
+            }
             const recognition = new webkitSpeechRecognition();
             recognition.lang = language === 'hi' ? 'hi-IN' : 'en-US';
-            recognition.interimResults = false;
-
             recognition.onstart = () => setIsListening(true);
             recognition.onend = () => setIsListening(false);
-
-            recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                setInputValue(transcript);
-            };
-
-            recognition.onerror = () => {
-                setIsListening(false);
-            };
-
+            recognition.onresult = (e) => setInputValue(e.results[0][0].transcript);
             recognitionRef.current = recognition;
             recognition.start();
         };
 
-        // Text-to-Speech
-        const speakText = (text) => {
-            if (!voiceEnabled || !window.speechSynthesis) return;
-
-            const utterance = new SpeechSynthesisUtterance(text);
-            window.speechSynthesis.speak(utterance);
-        };
-
-        // Document upload
         const handleFileUpload = async (event) => {
             const file = event.target.files[0];
             if (!file) return;
-
-            if (file.size > 10 * 1024 * 1024) {
-                addMessage('❌ File too large. Max 10MB.', false);
-                return;
-            }
-
             addMessage(t('uploadSuccess'), false);
             setIsTyping(true);
 
             try {
                 const imageUrl = URL.createObjectURL(file);
                 const result = await Tesseract.recognize(imageUrl, 'eng+hin');
-                const text = result.data.text;
-
                 URL.revokeObjectURL(imageUrl);
 
-                if (text && text.trim()) {
-                    setUploadedDocs(prev => [...prev, {
-                        name: file.name,
-                        text: text,
-                        timestamp: new Date()
-                    }]);
-
-                    addMessage(`${t('ocrSuccess')}:\n\n"${text.substring(0, 200)}${text.length > 200 ? '...' : ''}"`, false);
-                } else {
-                    addMessage('⚠️ No text found.', false);
+                if (result.data.text.trim()) {
+                    setInputValue((prev) => prev + " [Attached Text: " + result.data.text.substring(0, 100) + "...] ");
                 }
             } catch (error) {
                 addMessage(t('uploadError'), false);
@@ -515,723 +275,163 @@
             }
         };
 
-        // Quick action click
-        const handleQuickAction = (query) => {
-            setInputValue(query);
-            setTimeout(sendMessage, 100);
-        };
-
-        // Clear chat
-        const clearChat = () => {
-            if (confirm(t('clearConfirm'))) {
-                setMessages([]);
-                setUploadedDocs([]);
-            }
-        };
-
-        const getStyles = () => ({
-            container: {
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-            },
-            app: {
-                width: '100%',
-                maxWidth: '1000px',
-                height: 'calc(100vh - 32px)',
-                borderRadius: '32px',
-                boxShadow: darkMode
-                    ? '0 25px 80px rgba(0, 0, 0, 0.5)'
-                    : '0 25px 80px rgba(0, 0, 0, 0.15)',
-                display: 'flex',
-                flexDirection: 'column',
-                overflow: 'hidden'
-            },
-            header: {
-                padding: '28px 36px',
-                borderBottom: `1px solid ${darkMode ? 'var(--dark-border)' : 'var(--border)'}`,
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                background: darkMode
-                    ? 'rgba(26, 31, 41, 0.8)'
-                    : 'linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(250,251,252,0.9) 100%)',
-                backdropFilter: 'blur(20px)'
-            },
-            headerLeft: {
-                display: 'flex',
-                alignItems: 'center',
-                gap: '20px'
-            },
-            headerRight: {
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px'
-            },
-            logo: {
-                fontSize: '56px',
-                cursor: 'pointer',
-                filter: 'drop-shadow(0 4px 12px rgba(99, 102, 241, 0.3))'
-            },
-            title: {
-                fontSize: '28px',
-                fontWeight: '800',
-                background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                margin: 0,
-                letterSpacing: '-0.5px'
-            },
-            subtitle: {
-                fontSize: '15px',
-                color: darkMode ? 'var(--dark-text-secondary)' : 'var(--text-secondary)',
-                margin: 0,
-                fontWeight: '500'
-            },
-            quickActions: {
-                padding: '16px 36px',
-                display: 'flex',
-                gap: '12px',
-                flexWrap: 'wrap',
-                borderBottom: `1px solid ${darkMode ? 'var(--dark-border)' : 'var(--border)'}`,
-                background: darkMode ? 'rgba(26, 31, 41, 0.5)' : 'rgba(255, 255, 255, 0.5)'
-            },
-            chatContainer: {
-                flex: 1,
-                overflow: 'hidden',
-                background: darkMode
-                    ? 'linear-gradient(180deg, #1a1f29 0%, #0f1419 100%)'
-                    : 'linear-gradient(180deg, #fafbfc 0%, #f8f9fa 100%)'
-            },
-            chatBox: {
-                height: '100%',
-                overflowY: 'auto',
-                padding: '28px 36px'
-            },
-            inputContainer: {
-                padding: '24px 36px',
-                borderTop: `1px solid ${darkMode ? 'var(--dark-border)' : 'var(--border)'}`,
-                background: darkMode
-                    ? 'rgba(26, 31, 41, 0.8)'
-                    : 'rgba(255, 255, 255, 0.8)',
-                backdropFilter: 'blur(20px)'
-            },
-            inputWrapper: {
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                background: darkMode ? 'var(--dark-bg-tertiary)' : '#f3f4f6',
-                borderRadius: '28px',
-                padding: '6px',
-                border: `2px solid transparent`,
-                transition: 'all 0.3s ease'
-            },
-            input: {
-                flex: 1,
-                border: 'none',
-                background: 'transparent',
-                fontSize: '15px',
-                outline: 'none',
-                padding: '0 12px',
-                color: darkMode ? 'var(--dark-text-primary)' : 'var(--text-primary)'
-            }
-        });
-
-        const styles = getStyles();
-
         return (
-            <div style={styles.container}>
-                <motion.div
-                    className="glass"
-                    style={styles.app}
-                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    transition={{ duration: 0.5, ease: [0.68, -0.55, 0.265, 1.55] }}
-                >
-                    <Header
-                        language={language}
-                        setLanguage={setLanguage}
-                        darkMode={darkMode}
-                        setDarkMode={setDarkMode}
-                        voiceEnabled={voiceEnabled}
-                        setVoiceEnabled={setVoiceEnabled}
-                        clearChat={clearChat}
-                        t={t}
-                        styles={styles}
-                    />
-
-                    <QuickActions
-                        actions={quickActions}
-                        onAction={handleQuickAction}
-                        darkMode={darkMode}
-                        styles={styles}
-                    />
-
-                    <div style={styles.chatContainer}>
-                        <div style={styles.chatBox} ref={chatBoxRef}>
-                            {messages.length === 0 ? (
-                                <WelcomeScreen
-                                    suggestions={schemeSuggestions}
-                                    onSuggestionClick={handleQuickAction}
-                                    darkMode={darkMode}
-                                    t={t}
-                                />
-                            ) : (
-                                <AnimatePresence>
-                                    {messages.map(msg => (
-                                        <Message key={msg.id} message={msg} darkMode={darkMode} />
-                                    ))}
-                                </AnimatePresence>
-                            )}
-
-                            {isTyping && <TypingIndicator darkMode={darkMode} />}
+            <div style={{
+                width: '100%', maxWidth: '1000px', height: 'calc(100vh - 48px)',
+                background: 'var(--bg-app)', borderRadius: '24px',
+                boxShadow: 'var(--shadow-app)', display: 'flex', flexDirection: 'column',
+                overflow: 'hidden', border: '1px solid var(--border-color)'
+            }}>
+                <header style={{
+                    padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    borderBottom: '1px solid var(--border-color)', background: 'var(--bg-app)', zIndex: 10
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <div style={{
+                            width: '40px', height: '40px', borderRadius: '10px',
+                            background: 'rgba(37, 99, 235, 0.1)', display: 'flex',
+                            alignItems: 'center', justifyContent: 'center'
+                        }}>
+                            <Icons.Shield />
+                        </div>
+                        <div>
+                            <h1 style={{ fontSize: '18px', fontWeight: '600', color: 'var(--text-primary)', margin: 0 }}>{t('appTitle')}</h1>
+                            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: 0 }}>{t('appSubtitle')}</p>
                         </div>
                     </div>
 
-                    <InputArea
-                        value={inputValue}
-                        setValue={setInputValue}
-                        onSend={sendMessage}
-                        onVoice={startListening}
-                        isListening={isListening}
-                        onFileUpload={() => fileInputRef.current?.click()}
-                        uploadCount={uploadedDocs.length}
-                        placeholder={t('placeholder')}
-                        darkMode={darkMode}
-                        styles={styles}
-                    />
-
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        style={{ display: 'none' }}
-                        onChange={handleFileUpload}
-                    />
-                </motion.div>
-            </div>
-        );
-    }
-
-    // Header Component
-    function Header({ language, setLanguage, darkMode, setDarkMode, voiceEnabled, setVoiceEnabled, clearChat, t, styles }) {
-        return (
-            <div style={styles.header}>
-                <div style={styles.headerLeft}>
-                    <motion.div
-                        style={styles.logo}
-                        whileHover={{ scale: 1.1, rotate: 10 }}
-                        whileTap={{ scale: 0.95 }}
-                    >
-                        🏛️
-                    </motion.div>
-                    <div>
-                        <h1 style={styles.title}>{t('appTitle')}</h1>
-                        <p style={styles.subtitle}>{t('appSubtitle')}</p>
-                    </div>
-                </div>
-
-                <div style={styles.headerRight}>
-                    <ThemeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
-
-                    <select
-                        style={{
-                            padding: '10px 16px',
-                            border: `1px solid ${darkMode ? 'var(--dark-border)' : 'var(--border)'}`,
-                            borderRadius: '24px',
-                            background: darkMode ? 'var(--dark-bg-tertiary)' : 'white',
-                            color: darkMode ? 'var(--dark-text-primary)' : 'var(--text-primary)',
-                            fontSize: '14px',
-                            fontWeight: '600',
-                            cursor: 'pointer',
-                            outline: 'none',
-                            transition: 'all 0.2s'
-                        }}
-                        value={language}
-                        onChange={(e) => setLanguage(e.target.value)}
-                    >
-                        <option value="en">🇬🇧 EN</option>
-                        <option value="hi">🇮🇳 हिं</option>
-                    </select>
-
-                    <AnimatedIconButton onClick={() => setVoiceEnabled(!voiceEnabled)} darkMode={darkMode}>
-                        {voiceEnabled ? '🔊' : '🔇'}
-                    </AnimatedIconButton>
-
-                    <AnimatedIconButton onClick={clearChat} darkMode={darkMode}>
-                        🗑️
-                    </AnimatedIconButton>
-                </div>
-            </div>
-        );
-    }
-
-    // Theme Toggle Component
-    function ThemeToggle({ darkMode, setDarkMode }) {
-        return (
-            <motion.button
-                style={{
-                    width: '56px',
-                    height: '32px',
-                    borderRadius: '16px',
-                    background: darkMode
-                        ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                        : 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                    border: 'none',
-                    cursor: 'pointer',
-                    position: 'relative',
-                    padding: '4px'
-                }}
-                onClick={() => setDarkMode(!darkMode)}
-                whileTap={{ scale: 0.95 }}
-            >
-                <motion.div
-                    style={{
-                        width: '24px',
-                        height: '24px',
-                        borderRadius: '50%',
-                        background: 'white',
-                        position: 'absolute',
-                        top: '4px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '14px'
-                    }}
-                    animate={{ left: darkMode ? '28px' : '4px' }}
-                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                >
-                    {darkMode ? '🌙' : '☀️'}
-                </motion.div>
-            </motion.button>
-        );
-    }
-
-    // Quick Actions Component
-    function QuickActions({ actions, onAction, darkMode, styles }) {
-        return (
-            <div style={styles.quickActions}>
-                {actions.map((action, index) => (
-                    <motion.button
-                        key={action.id}
-                        style={{
-                            padding: '12px 24px',
-                            border: 'none',
-                            borderRadius: '100px',
-                            background: action.gradient,
-                            color: 'white',
-                            fontSize: '14px',
-                            fontWeight: '700',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)'
-                        }}
-                        onClick={() => onAction(action.query)}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.1, duration: 0.4 }}
-                        whileHover={{ scale: 1.05, y: -3, boxShadow: '0 8px 25px rgba(0, 0, 0, 0.2)' }}
-                        whileTap={{ scale: 0.98 }}
-                    >
-                        <span style={{ fontSize: '20px' }}>{action.icon}</span>
-                        <span>{action.text}</span>
-                    </motion.button>
-                ))}
-            </div>
-        );
-    }
-
-    // Welcome Screen Component
-    function WelcomeScreen({ suggestions, onSuggestionClick, darkMode, t }) {
-        return (
-            <motion.div
-                style={{
-                    textAlign: 'center',
-                    padding: '48px 24px'
-                }}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-            >
-                <motion.h2
-                    style={{
-                        fontSize: '32px',
-                        fontWeight: '800',
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        backgroundClip: 'text',
-                        marginBottom: '16px'
-                    }}
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.2, duration: 0.5 }}
-                >
-                    {t('welcomeTitle')}
-                </motion.h2>
-
-                <motion.p
-                    style={{
-                        fontSize: '16px',
-                        color: darkMode ? 'var(--dark-text-secondary)' : 'var(--text-secondary)',
-                        marginBottom: '40px',
-                        maxWidth: '500px',
-                        margin: '0 auto 40px'
-                    }}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.4, duration: 0.5 }}
-                >
-                    {t('welcomeSubtitle')}
-                </motion.p>
-
-                <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                    gap: '16px',
-                    maxWidth: '800px',
-                    margin: '0 auto'
-                }}>
-                    {suggestions.map((suggestion, index) => (
-                        <motion.button
-                            key={suggestion.id}
-                            style={{
-                                padding: '28px',
-                                border: `2px solid ${darkMode ? 'var(--dark-border)' : 'var(--border)'}`,
-                                borderRadius: '24px',
-                                background: darkMode ? 'rgba(26, 31, 41, 0.5)' : 'rgba(255, 255, 255, 0.9)',
-                                backdropFilter: 'blur(10px)',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'flex-start',
-                                gap: '20px',
-                                textAlign: 'left',
-                                position: 'relative',
-                                overflow: 'hidden'
-                            }}
-                            onClick={() => onSuggestionClick(suggestion.title)}
-                            initial={{ opacity: 0, y: 30 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.5 + index * 0.1, duration: 0.5 }}
-                            whileHover={{
-                                scale: 1.03,
-                                y: -5,
-                                boxShadow: '0 12px 35px rgba(0, 0, 0, 0.15)',
-                                borderColor: suggestion.color
-                            }}
-                            whileTap={{ scale: 0.98 }}
-                        >
-                            <motion.div
-                                style={{
-                                    fontSize: '40px',
-                                    width: '64px',
-                                    height: '64px',
-                                    borderRadius: '20px',
-                                    background: `linear-gradient(135deg, ${suggestion.color} 0%, ${suggestion.color}dd 100%)`,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    flexShrink: 0,
-                                    boxShadow: `0 8px 20px ${suggestion.color}50`
-                                }}
-                                whileHover={{ rotate: 10 }}
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <div style={{
+                            display: 'flex', alignItems: 'center', gap: '6px',
+                            padding: '6px 12px', borderRadius: '20px',
+                            border: '1px solid var(--border-color)', background: 'var(--bg-chat)'
+                        }}>
+                            <Icons.Globe />
+                            <select
+                                value={language} onChange={(e) => setLanguage(e.target.value)}
+                                style={{ border: 'none', background: 'transparent', fontSize: '13px', fontWeight: '500', color: 'var(--text-primary)', cursor: 'pointer' }}
                             >
-                                {suggestion.icon}
-                            </motion.div>
-                            <div style={{ flex: 1 }}>
-                                <div style={{
-                                    fontSize: '18px',
-                                    fontWeight: '700',
-                                    color: darkMode ? 'var(--dark-text-primary)' : 'var(--text-primary)',
-                                    marginBottom: '6px'
-                                }}>
-                                    {suggestion.title}
-                                </div>
-                                <div style={{
-                                    fontSize: '14px',
-                                    color: darkMode ? 'var(--dark-text-secondary)' : 'var(--text-secondary)'
-                                }}>
-                                    {suggestion.subtitle}
-                                </div>
+                                <option value="en">English</option>
+                                <option value="hi">हिंदी</option>
+                            </select>
+                        </div>
+
+                        <button className={`btn-icon ${voiceEnabled ? 'active' : ''}`} onClick={handleVoiceToggle} title={voiceEnabled ? "Mute Voice" : "Enable Voice"}>
+                            {voiceEnabled ? <Icons.Volume /> : <Icons.VolumeX />}
+                        </button>
+                        <button className="btn-icon" onClick={() => setDarkMode(!darkMode)} title="Toggle Theme">
+                            {darkMode ? <Icons.Moon /> : <Icons.Sun />}
+                        </button>
+                        <button className="btn-icon" onClick={() => setMessages([])} title="Clear Chat">
+                            <Icons.Trash />
+                        </button>
+                    </div>
+                </header>
+
+                <div ref={chatBoxRef} style={{ flex: 1, overflowY: 'auto', background: 'var(--bg-chat)', padding: '24px' }}>
+                    {messages.length === 0 ? (
+                        <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', maxWidth: '600px', margin: '0 auto' }}>
+                            <div style={{ marginBottom: '24px', color: 'var(--primary)', opacity: 0.8 }}><Icons.Shield /></div>
+                            <h2 style={{ fontSize: '24px', fontWeight: '600', marginBottom: '12px', color: 'var(--text-primary)' }}>{t('welcomeTitle')}</h2>
+                            <p style={{ fontSize: '15px', color: 'var(--text-secondary)', textAlign: 'center', marginBottom: '40px', lineHeight: '1.5' }}>{t('welcomeSubtitle')}</p>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', width: '100%' }}>
+                                {schemeSuggestions.map(s => (
+                                    <button key={s.id} onClick={() => { setInputValue(s.query); setTimeout(sendMessage, 50); }}
+                                            style={{
+                                                padding: '16px', borderRadius: '12px', border: '1px solid var(--border-color)',
+                                                background: 'var(--bg-app)', display: 'flex', alignItems: 'center', gap: '12px',
+                                                cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s', color: 'var(--text-primary)'
+                                            }}
+                                            onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--primary)'}
+                                            onMouseOut={(e) => e.currentTarget.style.borderColor = 'var(--border-color)'}
+                                    >
+                                        <div style={{ color: 'var(--primary)' }}>{s.icon}</div>
+                                        <span style={{ fontSize: '14px', fontWeight: '500' }}>{s.title}</span>
+                                    </button>
+                                ))}
                             </div>
-                        </motion.button>
-                    ))}
+                        </div>
+                    ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '800px', margin: '0 auto' }}>
+                            <AnimatePresence>
+                                {messages.map(msg => (
+                                    <motion.div key={msg.id}
+                                                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                                                style={{ display: 'flex', gap: '12px', flexDirection: msg.isUser ? 'row-reverse' : 'row' }}
+                                    >
+                                        <div style={{
+                                            width: '32px', height: '32px', borderRadius: '8px', flexShrink: 0,
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            background: msg.isUser ? 'var(--primary)' : 'var(--border-color)',
+                                            color: msg.isUser ? '#fff' : 'var(--text-secondary)'
+                                        }}>
+                                            {msg.isUser ? <Icons.User /> : <Icons.Bot />}
+                                        </div>
+                                        <div style={{
+                                            padding: '12px 16px', borderRadius: '12px', maxWidth: '80%',
+                                            fontSize: '15px', lineHeight: '1.5', whiteSpace: 'pre-wrap',
+                                            background: msg.isUser ? 'var(--bg-bubble-user)' : 'var(--bg-bubble-bot)',
+                                            color: msg.isUser ? 'var(--text-bubble-user)' : 'var(--text-bubble-bot)',
+                                            border: msg.isUser ? 'none' : '1px solid var(--border-color)',
+                                            borderTopRightRadius: msg.isUser ? '4px' : '12px',
+                                            borderTopLeftRadius: msg.isUser ? '12px' : '4px'
+                                        }}>
+                                            {msg.content}
+                                        </div>
+                                    </motion.div>
+                                ))}
+                                {isTyping && (
+                                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', gap: '12px' }}>
+                                        <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)' }}><Icons.Bot /></div>
+                                        <div style={{ padding: '16px', borderRadius: '12px', background: 'var(--bg-bubble-bot)', display: 'flex', gap: '4px' }}>
+                                            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--text-secondary)', animation: 'pulse 1s infinite' }}></span>
+                                            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--text-secondary)', animation: 'pulse 1s infinite 0.2s' }}></span>
+                                            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--text-secondary)', animation: 'pulse 1s infinite 0.4s' }}></span>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                    )}
                 </div>
-            </motion.div>
-        );
-    }
 
-    // Message Component
-    function Message({ message, darkMode }) {
-        return (
-            <motion.div
-                style={{
-                    display: 'flex',
-                    gap: '14px',
-                    marginBottom: '24px',
-                    maxWidth: '75%',
-                    alignSelf: message.isUser ? 'flex-end' : 'flex-start',
-                    marginLeft: message.isUser ? 'auto' : '0',
-                    flexDirection: message.isUser ? 'row-reverse' : 'row'
-                }}
-                initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.4, ease: [0.68, -0.55, 0.265, 1.55] }}
-            >
-                <motion.div
-                    style={{
-                        width: '44px',
-                        height: '44px',
-                        borderRadius: '50%',
-                        background: message.isUser
-                            ? 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)'
-                            : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '22px',
-                        flexShrink: 0,
-                        boxShadow: message.isUser
-                            ? '0 8px 20px rgba(99, 102, 241, 0.4)'
-                            : '0 8px 20px rgba(16, 185, 129, 0.4)'
-                    }}
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                >
-                    {message.isUser ? '👤' : '🤖'}
-                </motion.div>
-
-                <div style={{ flex: 1 }}>
-                    <motion.div
-                        style={{
-                            padding: '16px 20px',
-                            borderRadius: '20px',
-                            background: message.isUser
-                                ? 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)'
-                                : darkMode
-                                    ? 'rgba(26, 31, 41, 0.8)'
-                                    : 'white',
-                            color: message.isUser
-                                ? 'white'
-                                : darkMode
-                                    ? 'var(--dark-text-primary)'
-                                    : 'var(--text-primary)',
-                            border: message.isUser
-                                ? 'none'
-                                : `1px solid ${darkMode ? 'var(--dark-border)' : 'var(--border)'}`,
-                            fontSize: '15px',
-                            lineHeight: '1.6',
-                            whiteSpace: 'pre-wrap',
-                            boxShadow: message.isUser
-                                ? '0 4px 20px rgba(99, 102, 241, 0.3)'
-                                : '0 4px 15px rgba(0, 0, 0, 0.08)',
-                            backdropFilter: 'blur(10px)'
-                        }}
-                        whileHover={{ y: -2, boxShadow: '0 8px 25px rgba(0, 0, 0, 0.12)' }}
-                    >
-                        {message.content}
-                    </motion.div>
+                <div style={{ padding: '20px 24px', background: 'var(--bg-app)', borderTop: '1px solid var(--border-color)' }}>
                     <div style={{
-                        fontSize: '12px',
-                        color: darkMode ? 'var(--dark-text-tertiary)' : 'var(--text-tertiary)',
-                        marginTop: '8px',
-                        paddingLeft: '4px'
+                        display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-body)',
+                        padding: '8px', borderRadius: '16px', border: '1px solid var(--border-color)'
                     }}>
-                        {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        <button className="btn-icon" onClick={() => fileInputRef.current?.click()}>
+                            <Icons.Paperclip />
+                        </button>
+                        <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileUpload} accept="image/*,application/pdf" />
+
+                        <input
+                            value={inputValue} onChange={e => setInputValue(e.target.value)}
+                            onKeyPress={e => e.key === 'Enter' && sendMessage()}
+                            placeholder={t('placeholder')}
+                            style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '15px', color: 'var(--text-primary)', padding: '0 8px' }}
+                        />
+
+                        <button className={`btn-icon ${isListening ? 'active' : ''}`} onClick={handleVoice}>
+                            <Icons.Mic />
+                        </button>
+
+                        <button onClick={sendMessage} disabled={!inputValue.trim()} style={{
+                            width: '40px', height: '40px', borderRadius: '10px', border: 'none',
+                            background: inputValue.trim() ? 'var(--primary)' : 'var(--border-color)',
+                            color: inputValue.trim() ? '#ffffff' : 'var(--text-secondary)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: inputValue.trim() ? 'pointer' : 'default',
+                            transition: 'all 0.2s'
+                        }}>
+                            <Icons.Send />
+                        </button>
                     </div>
                 </div>
-            </motion.div>
-        );
-    }
-
-    // Typing Indicator Component
-    function TypingIndicator({ darkMode }) {
-        return (
-            <motion.div
-                style={{
-                    display: 'flex',
-                    gap: '14px',
-                    alignItems: 'center',
-                    marginBottom: '24px',
-                    maxWidth: '75%'
-                }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-            >
-                <div style={{
-                    width: '44px',
-                    height: '44px',
-                    borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '22px',
-                    boxShadow: '0 8px 20px rgba(16, 185, 129, 0.4)'
-                }}>
-                    🤖
-                </div>
-                <div style={{
-                    padding: '16px 20px',
-                    background: darkMode ? 'rgba(26, 31, 41, 0.8)' : 'white',
-                    borderRadius: '20px',
-                    border: `1px solid ${darkMode ? 'var(--dark-border)' : 'var(--border)'}`,
-                    display: 'flex',
-                    gap: '8px',
-                    backdropFilter: 'blur(10px)'
-                }}>
-                    {[0, 1, 2].map(i => (
-                        <motion.span
-                            key={i}
-                            style={{
-                                width: '10px',
-                                height: '10px',
-                                borderRadius: '50%',
-                                background: darkMode ? '#9ca3af' : '#6b7280',
-                                display: 'inline-block'
-                            }}
-                            animate={{ y: [-5, 0, -5] }}
-                            transition={{
-                                repeat: Infinity,
-                                duration: 0.8,
-                                delay: i * 0.15,
-                                ease: 'easeInOut'
-                            }}
-                        />
-                    ))}
-                </div>
-            </motion.div>
-        );
-    }
-
-    // Input Area Component
-    function InputArea({ value, setValue, onSend, onVoice, isListening, onFileUpload, uploadCount, placeholder, darkMode, styles }) {
-        const handleKeyPress = (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                onSend();
-            }
-        };
-
-        return (
-            <div style={styles.inputContainer}>
-                <motion.div
-                    style={styles.inputWrapper}
-                    whileFocus={{
-                        borderColor: '#6366f1',
-                        boxShadow: '0 0 0 4px rgba(99, 102, 241, 0.1)'
-                    }}
-                >
-                    <AnimatedIconButton onClick={onFileUpload} darkMode={darkMode} badge={uploadCount}>
-                        ➕
-                    </AnimatedIconButton>
-
-                    <input
-                        style={styles.input}
-                        value={value}
-                        onChange={(e) => setValue(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        placeholder={placeholder}
-                    />
-
-                    <AnimatedIconButton
-                        onClick={onVoice}
-                        darkMode={darkMode}
-                        isListening={isListening}
-                    >
-                        🎙️
-                    </AnimatedIconButton>
-
-                    <motion.button
-                        style={{
-                            width: '48px',
-                            height: '48px',
-                            borderRadius: '50%',
-                            border: 'none',
-                            background: value.trim()
-                                ? 'linear-gradient(135deg, #ec4899 0%, #f43f5e 100%)'
-                                : darkMode ? '#374151' : '#d1d5db',
-                            color: 'white',
-                            fontSize: '20px',
-                            cursor: value.trim() ? 'pointer' : 'not-allowed',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            boxShadow: value.trim() ? '0 4px 15px rgba(236, 72, 153, 0.4)' : 'none'
-                        }}
-                        onClick={onSend}
-                        disabled={!value.trim()}
-                        whileHover={value.trim() ? { scale: 1.05, boxShadow: '0 8px 25px rgba(236, 72, 153, 0.5)' } : {}}
-                        whileTap={value.trim() ? { scale: 0.95 } : {}}
-                    >
-                        ⬆️
-                    </motion.button>
-                </motion.div>
             </div>
         );
     }
 
-    // Animated Icon Button Component
-    function AnimatedIconButton({ children, onClick, darkMode, badge, isListening }) {
-        return (
-            <motion.button
-                style={{
-                    width: '48px',
-                    height: '48px',
-                    borderRadius: '50%',
-                    border: 'none',
-                    background: darkMode ? '#374151' : 'transparent',
-                    color: isListening ? '#ef4444' : darkMode ? '#9ca3af' : '#6b7280',
-                    fontSize: '20px',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    position: 'relative'
-                }}
-                onClick={onClick}
-                whileHover={{ scale: 1.1, background: darkMode ? '#4b5563' : '#f3f4f6' }}
-                whileTap={{ scale: 0.95 }}
-                animate={isListening ? { scale: [1, 1.1, 1] } : {}}
-                transition={isListening ? { repeat: Infinity, duration: 1.5 } : {}}
-            >
-                {children}
-                {badge > 0 && (
-                    <motion.span
-                        style={{
-                            position: 'absolute',
-                            top: '-4px',
-                            right: '-4px',
-                            background: 'linear-gradient(135deg, #ec4899 0%, #f43f5e 100%)',
-                            color: 'white',
-                            borderRadius: '50%',
-                            width: '20px',
-                            height: '20px',
-                            fontSize: '12px',
-                            fontWeight: '700',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            boxShadow: '0 2px 8px rgba(236, 72, 153, 0.4)'
-                        }}
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ type: 'spring', stiffness: 500 }}
-                    >
-                        {badge}
-                    </motion.span>
-                )}
-            </motion.button>
-        );
-    }
-
-    // Render App
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<YojanaSetu />);
 </script>
