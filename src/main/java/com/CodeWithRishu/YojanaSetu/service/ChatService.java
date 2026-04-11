@@ -7,6 +7,7 @@ import org.springframework.ai.reader.pdf.PagePdfDocumentReader;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.ai.vectorstore.filter.FilterExpressionBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -34,17 +35,34 @@ public class ChatService {
 
     @PostConstruct
     public void loadSchemes() {
-        boolean hasDocs = vectorStore.similaritySearch(
-                        SearchRequest.builder().query(".").topK(1).build()
-                ).stream()
-                .findAny()
-                .isPresent();
-
-        if (hasDocs) {
-            log.info("Vector store populated. Skipping PDF load.");
+        if (pdfResource == null || pdfResource.length == 0) {
+            log.warn("No PDF resources found in classpath:schemes/*.pdf");
             return;
         }
-        this.loadPdfDocs();
+
+        var filterBuilder = new FilterExpressionBuilder();
+
+        Arrays.stream(pdfResource)
+                .filter(r -> r.getFilename() != null && !r.getFilename().isEmpty())
+                .forEach(resource -> {
+                    String fileName = resource.getFilename();
+
+                    boolean alreadyLoaded = vectorStore.similaritySearch(
+                            SearchRequest.builder()
+                                    .query(".")
+                                    .topK(1)
+                                    .similarityThreshold(0.0d)
+                                    .filterExpression(filterBuilder.eq("source", fileName).build())
+                                    .build()
+                    ).stream().findAny().isPresent();
+
+                    if (alreadyLoaded) {
+                        log.info("Scheme from {} already loaded, skipping.", fileName);
+                        return;
+                    }
+
+                    this.loadSinglePdfDocs(resource);
+                });
     }
 
     public String getRAGResponse(String userQuery) {
@@ -69,7 +87,7 @@ public class ChatService {
                         }
 
                         String response = chatClient.prompt()
-                                .system(systemPrompt)
+                                .system(ChatService.systemPrompt)
                                 .user(context + "\n\nQUESTION: " + query)
                                 .call()
                                 .content();
@@ -87,22 +105,17 @@ public class ChatService {
                 .orElse("Please provide a valid question.");
     }
 
-    private void loadPdfDocs() {
-        Optional.ofNullable(pdfResource)
-                .stream()
-                .flatMap(Arrays::stream)
-                .forEach(resource -> {
-                    try {
-                        List<Document> documents = new TokenTextSplitter()
-                                .apply(new PagePdfDocumentReader(resource).get());
-
-                        vectorStore.add(documents);
-                        log.info("Loaded scheme from {} with {} chunks",
-                                resource.getFilename(), documents.size());
-                    } catch (Exception e) {
-                        log.error("Unable to load PDF: {}", resource.getFilename(), e);
-                    }
-                });
+    private void loadSinglePdfDocs(Resource resource) {
+        try {
+            var reader = new PagePdfDocumentReader(resource);
+            var docs = new TokenTextSplitter()
+                    .split(reader.get());
+            docs.forEach(doc -> doc.getMetadata().put("source", resource.getFilename()));
+            vectorStore.add(docs);
+            log.info("Loaded: {} {} pages", resource.getFilename(), docs.size());
+        } catch (Exception e) {
+            log.error("Failed to load PDF: {}", resource.getFilename(), e);
+        }
     }
 
     private static final String systemPrompt = """
@@ -113,28 +126,28 @@ public class ChatService {
             2. Use SIMPLE words (avoid complex terminology)
             3. Use SHORT SENTENCES (max 15 words per sentence)
             4. Use DASHES (-) for bullet points, NEVER asterisks (*)
-            5. Add ✅/❌/📝 emojis for visual appeal
+            5. Add emojis for visual appeal
             6. End with source: "स्रोत: [PDF Name]" (in Hindi) or "Source: [PDF Name]" (in English)
             7. If no info available, say so politely in user's language
             
             FORMAT:
             **Scheme Name / योजना नाम**
-            ✅ Eligibility / पात्रता:
+            Eligibility / पात्रता:
             - [point 1]
             - [point 2]
             - [point 3]
             
-            💰 Benefits / लाभ:
+            Benefits / लाभ:
             - [point 1]
             - [point 2]
             - [point 3]
             
-            📋 Application / आवेदन:
+            Application / आवेदन:
             - [how to apply]
             
             Source/स्रोत: [PDF]
             
-            CRITICAL: 
+            CRITICAL:
             - Detect user's language (Hindi/English/Hinglish) and respond in that language
             - Use dash (-) for lists, NOT asterisk (*)
             """;
