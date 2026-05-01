@@ -7,7 +7,7 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -16,98 +16,122 @@
     <style>
         :root {
             --bg-body: #f1f5f9;
-            --bg-app: #ffffff;
-            --bg-chat: #f8fafc;
-            --bg-input: #ffffff;
-            --bg-bubble-bot: #f1f5f9;
-            --bg-bubble-user: #2563eb;
-            --bg-hover: #f1f5f9;
+            --bg-app: rgba(255, 255, 255, 0.85);
+            --bg-sidebar: rgba(248, 250, 252, 0.6);
+            --bg-chat: transparent;
+            --bg-input: rgba(255, 255, 255, 0.95);
+            --bg-bubble-bot: #ffffff;
+            --bg-bubble-user: linear-gradient(135deg, #2563eb, #6366f1);
+            --bg-hover: rgba(37, 99, 235, 0.08);
             --text-primary: #0f172a;
-            --text-secondary: #475569;
+            --text-secondary: #64748b;
             --text-bubble-bot: #1e293b;
             --text-bubble-user: #ffffff;
-            --border-color: #e2e8f0;
+            --border-color: rgba(226, 232, 240, 0.8);
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
-            --danger: #ef4444;
-            --success: #10b981;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --shadow-app: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --shadow-app: none;
+            --shadow-bubble: 0 2px 5px rgba(0,0,0,0.02);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.8);
+            --font-head: 'Outfit', sans-serif;
+            --font-body: 'Inter', sans-serif;
         }
         body.dark {
-            --bg-body: #020617;
-            --bg-app: #0f172a;
-            --bg-chat: #020617;
-            --bg-input: #0f172a;
-            --bg-bubble-bot: #1e293b;
-            --bg-bubble-user: #3b82f6;
-            --bg-hover: #1e293b;
+            --bg-body: #080b12;
+            --bg-app: rgba(15, 23, 42, 0.8);
+            --bg-sidebar: rgba(11, 15, 25, 0.7);
+            --bg-input: rgba(30, 41, 59, 0.9);
+            --bg-bubble-bot: #162032;
+            --bg-bubble-user: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            --bg-hover: rgba(59, 130, 246, 0.1);
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
             --text-bubble-bot: #f1f5f9;
-            --text-bubble-user: #ffffff;
-            --border-color: #1e293b;
-            --shadow-app: 0 25px 50px -12px rgb(0 0 0 / 0.5);
+            --border-color: rgba(51, 65, 85, 0.6);
+            --shadow-app: none;
+            --shadow-bubble: 0 2px 5px rgba(0,0,0,0.2);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.03);
         }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background-color: var(--bg-body);
-            color: var(--text-primary);
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.3s ease;
-            -webkit-font-smoothing: antialiased;
+            background-color: var(--bg-body); color: var(--text-primary);
+            height: 100vh; display: flex; align-items: center; justify-content: center;
+            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            -webkit-font-smoothing: antialiased; font-family: var(--font-body); overflow: hidden;
         }
+        h1, h2, h3 { font-family: var(--font-head); letter-spacing: -0.02em; }
         .ambient-bg {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at top right, rgba(37, 99, 235, 0.05), transparent 40%),
-            radial-gradient(circle at bottom left, rgba(37, 99, 235, 0.05), transparent 40%);
-            z-index: 0;
-            pointer-events: none;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 0; pointer-events: none; overflow: hidden; background: var(--bg-body);
+            transition: background 0.4s ease;
         }
-        body.dark .ambient-bg {
-            background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.1), transparent 40%),
-            radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.1), transparent 40%);
+        .orb {
+            position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5;
+            animation: float 20s infinite alternate;
+        }
+        .orb-1 { background: rgba(59, 130, 246, 0.4); width: 400px; height: 400px; top: -100px; left: -100px; }
+        .orb-2 { background: rgba(139, 92, 246, 0.3); width: 500px; height: 500px; bottom: -150px; right: -100px; animation-delay: -5s; }
+        .orb-3 { background: rgba(16, 185, 129, 0.2); width: 300px; height: 300px; top: 40%; left: 60%; animation-delay: -10s; }
+        body.dark .orb-1 { background: rgba(59, 130, 246, 0.15); }
+        body.dark .orb-2 { background: rgba(139, 92, 246, 0.15); }
+        body.dark .orb-3 { background: rgba(16, 185, 129, 0.1); }
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0, 0) scale(1); }
         }
         #root {
-            width: 100%;
-            height: 100%;
-            padding: 24px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1;
+            width: 100vw; height: 100vh; padding: 0; display: flex;
+            justify-content: center; align-items: center; z-index: 1; position: relative;
         }
+        .app-container {
+            width: 100%; max-width: 100%; height: 100%; max-height: 100%;
+            background: transparent;
+            display: flex; flex-direction: row; overflow: hidden;
+            border: none; transition: all 0.4s ease;
+            position: relative; z-index: 1;
+        }
+        .sidebar {
+            width: 280px; height: 100%; background: var(--bg-sidebar); border-right: 1px solid var(--border-color);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            display: flex; flex-direction: column; padding: 24px; transition: all 0.3s ease;
+            box-shadow: 4px 0 24px rgba(0,0,0,0.05); z-index: 20;
+        }
+        .main-chat-area {
+            flex: 1; height: 100%; display: flex; flex-direction: column; position: relative;
+        }
+        body.dark .sidebar { box-shadow: 4px 0 24px rgba(0,0,0,0.2); }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
         .btn-icon {
             display: flex; align-items: center; justify-content: center;
-            width: 40px; height: 40px; border-radius: 8px;
-            border: 1px solid transparent; background: transparent;
-            color: var(--text-secondary); cursor: pointer;
-            transition: all 0.2s;
+            width: 40px; height: 40px; border-radius: 12px; border: none; background: transparent;
+            color: var(--text-secondary); cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .btn-icon:hover { background: var(--bg-hover); color: var(--text-primary); }
-        .btn-icon.active { color: var(--primary); background: rgba(37, 99, 235, 0.1); }
+        .btn-icon:hover { background: var(--bg-hover); color: var(--primary); transform: scale(1.05); }
+        .btn-icon:active { transform: scale(0.95); }
+        .btn-icon.active { color: var(--primary); background: var(--bg-hover); }
+        .chat-input-wrapper { transition: all 0.3s ease; border: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .chat-input-wrapper:focus-within { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2), 0 6px 16px rgba(0,0,0,0.05); transform: translateY(-1px); }
         input:focus { outline: none; }
-        select { -webkit-appearance: none; -moz-appearance: none; appearance: none; }
-        @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+        select { -webkit-appearance: none; -moz-appearance: none; appearance: none; outline: none; }
+        @keyframes typing {
+            0%, 100% { transform: translateY(0); opacity: 0.4; }
+            50% { transform: translateY(-4px); opacity: 1; }
+        }
+        .typing-dot {
+            width: 6px; height: 6px; border-radius: 50%; background: var(--text-secondary);
+            animation: typing 1.4s infinite ease-in-out both;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        .message-bubble { box-shadow: var(--shadow-bubble); position: relative; }
     </style>
 </head>
 <body>
-<div class="ambient-bg"></div>
 <div id="root"></div>
 <script type="text/babel">
     const { useState, useEffect, useRef, useCallback } = React;
@@ -115,22 +139,25 @@
     const API_BASE_URL = 'http://localhost:8080';
 
     const Icons = {
-        Bot: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg>,
-        User: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+        Bot: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>,
+        User: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
         Send: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>,
         Mic: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>,
         Paperclip: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>,
-        Trash: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>,
-        Sun: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>,
-        Moon: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>,
+        Trash: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>,
+        Sun: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>,
+        Moon: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>,
         Volume: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>,
         VolumeX: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>,
         Globe: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>,
-        Shield: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
+        Shield: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z"/></svg>,
         Briefcase: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>,
-        Graduation: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>,
-        Heart: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>,
-        Home: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Graduation: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.42 10.922a2 2 0 0 1-.01 2.833l-7.1 7.1a2 2 0 0 1-2.82 0l-7.1-7.1a2 2 0 0 1-.01-2.833 2 2 0 0 1 2.83-.01l6.29 6.29 6.29-6.29a2 2 0 0 1 2.83.01Z"/><path d="M12 2v4"/><path d="M12 18v4"/><path d="M2 12h4"/><path d="M18 12h4"/></svg>,
+        Heart: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>,
+        Home: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
+        Plus: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
+        Settings: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>,
+        MessageSquare: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
     };
 
     const translations = {
@@ -139,7 +166,7 @@
             appSubtitle: 'Government Scheme Assistant',
             placeholder: 'Ask about any government scheme...',
             welcomeTitle: 'How can I help you today?',
-            welcomeSubtitle: 'Ask me anything about eligibility, benefits, or the application process for Indian government schemes.',
+            welcomeSubtitle: 'Discover eligibility, benefits, and application processes for Indian government schemes effortlessly.',
             uploadSuccess: 'Document attached. Extracting text...',
             uploadError: 'Upload failed. Please ensure the file is valid.',
             ocrSuccess: 'Text extracted from document',
@@ -157,13 +184,15 @@
     };
 
     const schemeSuggestions = [
-        { id: 1, icon: <Icons.Briefcase />, title: 'PM Kisan Samman Nidhi', query: 'Tell me about PM Kisan Yojana' },
-        { id: 2, icon: <Icons.Graduation />, title: 'Student Scholarships', query: 'What are the scholarship schemes for students?' },
-        { id: 3, icon: <Icons.Heart />, title: 'Ayushman Bharat', query: 'How to apply for Ayushman Bharat health card?' },
-        { id: 4, icon: <Icons.Home />, title: 'PM Awas Yojana', query: 'Am I eligible for PM Awas Yojana housing scheme?' }
+        { id: 1, icon: <Icons.Briefcase />, title: 'PM Kisan Samman Nidhi', query: 'Tell me about PM Kisan Yojana', bgImage: 'assets/pm_kisan_bg.png' },
+        { id: 2, icon: <Icons.Graduation />, title: 'Student Scholarships', query: 'What are the scholarship schemes for students?', bgImage: 'assets/student_scholarship_bg.png' },
+        { id: 3, icon: <Icons.Heart />, title: 'Ayushman Bharat', query: 'How to apply for Ayushman Bharat health card?', bgImage: 'assets/ayushman_bharat_bg.png' },
+        { id: 4, icon: <Icons.Home />, title: 'PM Awas Yojana', query: 'Am I eligible for PM Awas Yojana housing scheme?', bgImage: 'assets/pm_awas_bg.png' }
     ];
 
     function YojanaSetu() {
+        const [showSplash, setShowSplash] = useState(true);
+        const [activeBgImage, setActiveBgImage] = useState(null);
         const [messages, setMessages] = useState([]);
         const [inputValue, setInputValue] = useState('');
         const [isTyping, setIsTyping] = useState(false);
@@ -179,13 +208,26 @@
         const t = (key) => translations[language]?.[key] || translations['en'][key];
 
         useEffect(() => {
+            const timer = setTimeout(() => setShowSplash(false), 3000);
+            return () => clearTimeout(timer);
+        }, []);
+
+        useEffect(() => {
+            const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            setDarkMode(isDark);
+        }, []);
+
+        useEffect(() => {
             if (darkMode) document.body.classList.add('dark');
             else document.body.classList.remove('dark');
         }, [darkMode]);
 
         useEffect(() => {
             if (chatBoxRef.current) {
-                chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+                chatBoxRef.current.scrollTo({
+                    top: chatBoxRef.current.scrollHeight,
+                    behavior: 'smooth'
+                });
             }
         }, [messages, isTyping]);
 
@@ -230,10 +272,13 @@
                 }
             } catch (error) {
                 console.error('API Error:', error);
-                addMessage("I'm having trouble connecting to the server right now. Please ensure the backend is running.", false);
-            } finally {
-                setIsTyping(false);
-            }
+                setTimeout(() => {
+                   addMessage("I'm having trouble connecting to the server right now. Please ensure the backend is running.", false);
+                   setIsTyping(false);
+                }, 1000);
+                return;
+            } 
+            setIsTyping(false);
         };
 
         const handleVoice = () => {
@@ -276,40 +321,168 @@
         };
 
         return (
-            <div style={{
-                width: '100%', maxWidth: '1000px', height: 'calc(100vh - 48px)',
-                background: 'var(--bg-app)', borderRadius: '24px',
-                boxShadow: 'var(--shadow-app)', display: 'flex', flexDirection: 'column',
-                overflow: 'hidden', border: '1px solid var(--border-color)'
-            }}>
-                <header style={{
-                    padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                    borderBottom: '1px solid var(--border-color)', background: 'var(--bg-app)', zIndex: 10
-                }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                        <div style={{
-                            width: '40px', height: '40px', borderRadius: '10px',
-                            background: 'rgba(37, 99, 235, 0.1)', display: 'flex',
-                            alignItems: 'center', justifyContent: 'center'
-                        }}>
+            <>
+            <AnimatePresence>
+                {showSplash && (
+                    <motion.div
+                        key="splash"
+                        initial={{ opacity: 1 }}
+                        exit={{ opacity: 0, y: -40, filter: 'blur(10px)', scale: 1.05 }}
+                        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                        style={{
+                            position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+                            background: darkMode ? '#080b12' : '#f1f5f9', zIndex: 9999,
+                            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyItems: 'center', justifyContent: 'center',
+                            overflow: 'hidden'
+                        }}
+                    >
+                        <motion.div
+                            initial={{ scale: 0, opacity: 0 }}
+                            animate={{ scale: [0, 1.5, 2], opacity: [0, 0.5, 0] }}
+                            transition={{ duration: 2.5, repeat: Infinity, ease: "easeOut" }}
+                            style={{ position: 'absolute', width: '200px', height: '200px', borderRadius: '50%', border: '2px solid rgba(37, 99, 235, 0.4)' }}
+                        />
+                        <motion.div
+                            initial={{ scale: 0, opacity: 0 }}
+                            animate={{ scale: [0, 1.5, 2], opacity: [0, 0.3, 0] }}
+                            transition={{ duration: 2.5, repeat: Infinity, ease: "easeOut", delay: 0.8 }}
+                            style={{ position: 'absolute', width: '250px', height: '250px', borderRadius: '50%', border: '2px solid rgba(139, 92, 246, 0.4)' }}
+                        />
+
+                        <motion.div
+                            initial={{ scale: 0.5, opacity: 0, rotateY: 90 }}
+                            animate={{ scale: 1, opacity: 1, rotateY: 0 }}
+                            transition={{ duration: 1.2, type: 'spring', bounce: 0.4 }}
+                            style={{
+                                width: '120px', height: '120px', borderRadius: '30px',
+                                background: 'linear-gradient(135deg, #2563eb, #8b5cf6)',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                color: 'white', boxShadow: '0 20px 40px rgba(37, 99, 235, 0.4), inset 0 0 0 2px rgba(255,255,255,0.2)',
+                                marginBottom: '32px', position: 'relative', zIndex: 10
+                            }}
+                        >
+                            <motion.svg 
+                                width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+                            >
+                                <motion.path 
+                                    initial={{ pathLength: 0, fill: "rgba(255,255,255,0)" }}
+                                    animate={{ pathLength: 1, fill: "rgba(255,255,255,0.2)" }}
+                                    transition={{ duration: 2, ease: "easeInOut" }}
+                                    d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z"
+                                />
+                            </motion.svg>
+                        </motion.div>
+                        <div style={{ overflow: 'hidden' }}>
+                            <motion.h1
+                                initial={{ y: 50, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ delay: 0.4, duration: 0.8, type: 'spring', damping: 15 }}
+                                style={{ 
+                                    fontSize: '48px', fontWeight: '800', 
+                                    background: 'linear-gradient(to right, var(--primary), #8b5cf6)',
+                                    WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                                    marginBottom: '8px', fontFamily: 'var(--font-head)' 
+                                }}
+                            >
+                                {t('appTitle')}
+                            </motion.h1>
+                        </div>
+                        <motion.div 
+                            initial={{ width: 0 }}
+                            animate={{ width: '80px' }}
+                            transition={{ delay: 0.6, duration: 0.8 }}
+                            style={{ height: '4px', background: 'linear-gradient(90deg, var(--primary), #8b5cf6)', borderRadius: '2px', marginBottom: '20px' }}
+                        />
+                        <motion.p
+                            initial={{ opacity: 0, filter: 'blur(10px)' }}
+                            animate={{ opacity: 1, filter: 'blur(0px)' }}
+                            transition={{ delay: 0.8, duration: 1 }}
+                            style={{ fontSize: '20px', color: 'var(--text-secondary)', fontWeight: '500', letterSpacing: '0.5px' }}
+                        >
+                            {t('appSubtitle')}
+                        </motion.p>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            <div className="ambient-bg">
+                {schemeSuggestions.map(s => (
+                    <div 
+                        key={s.id}
+                        style={{
+                            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                            backgroundImage: `url(${s.bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center',
+                            opacity: activeBgImage === s.bgImage ? (darkMode ? 0.7 : 0.8) : 0, transition: 'opacity 0.8s ease-in-out',
+                            mixBlendMode: 'normal'
+                        }}
+                    />
+                ))}
+                <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: darkMode ? 'rgba(11, 15, 25, 0.4)' : 'rgba(248, 250, 252, 0.3)', transition: 'background 0.5s ease', pointerEvents: 'none' }}></div>
+                <div className="orb orb-1"></div>
+                <div className="orb orb-2"></div>
+                <div className="orb orb-3"></div>
+            </div>
+
+            <motion.div 
+                className="app-container"
+                initial={{ opacity: 0, scale: 0.96, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 3.1, ease: [0.16, 1, 0.3, 1] }}
+            >
+                <div className="sidebar">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
+                        <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'linear-gradient(135deg, var(--primary), #8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
                             <Icons.Shield />
                         </div>
-                        <div>
-                            <h1 style={{ fontSize: '18px', fontWeight: '600', color: 'var(--text-primary)', margin: 0 }}>{t('appTitle')}</h1>
-                            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: 0 }}>{t('appSubtitle')}</p>
+                        <h1 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>{t('appTitle')}</h1>
+                    </div>
+                    
+                    <button onClick={() => setMessages([])} style={{
+                        display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px',
+                        background: 'var(--bg-hover)', border: '1px solid var(--border-color)', color: 'var(--text-primary)',
+                        cursor: 'pointer', fontWeight: '600', fontSize: '14px', transition: 'all 0.2s', marginBottom: '24px',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+                    }} onMouseOver={e => e.currentTarget.style.borderColor = 'var(--primary)'} onMouseOut={e => e.currentTarget.style.borderColor = 'var(--border-color)'}>
+                        <Icons.Plus /> New Chat
+                    </button>
+
+                    <div style={{ flex: 1, overflowY: 'auto' }}>
+                        <p style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>Recent</p>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            {messages.length > 0 ? (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '8px', cursor: 'pointer', color: 'var(--text-primary)', fontSize: '14px', background: 'var(--bg-hover)' }}>
+                                    <Icons.MessageSquare />
+                                    <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{messages[0]?.content}</span>
+                                </div>
+                            ) : (
+                                <p style={{ fontSize: '13px', color: 'var(--text-secondary)', fontStyle: 'italic' }}>No recent chats</p>
+                            )}
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+
+                </div>
+
+                <div className="main-chat-area">
+                    <header style={{
+                        padding: '16px 32px', display: 'flex', justifyContent: 'flex-end', alignItems: 'center',
+                        zIndex: 10, background: 'transparent'
+                    }}>
+
+                    <motion.div 
+                        initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.2 }}
+                        style={{ display: 'flex', gap: '8px', alignItems: 'center' }}
+                    >
                         <div style={{
                             display: 'flex', alignItems: 'center', gap: '6px',
-                            padding: '6px 12px', borderRadius: '20px',
-                            border: '1px solid var(--border-color)', background: 'var(--bg-chat)'
+                            padding: '8px 14px', borderRadius: '20px',
+                            border: '1px solid var(--border-color)', background: 'var(--bg-app)',
+                            boxShadow: 'var(--shadow-bubble)'
                         }}>
-                            <Icons.Globe />
+                            <span style={{ color: 'var(--text-secondary)' }}><Icons.Globe /></span>
                             <select
                                 value={language} onChange={(e) => setLanguage(e.target.value)}
-                                style={{ border: 'none', background: 'transparent', fontSize: '13px', fontWeight: '500', color: 'var(--text-primary)', cursor: 'pointer' }}
+                                style={{ border: 'none', background: 'transparent', fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)', cursor: 'pointer' }}
                             >
                                 <option value="en">English</option>
                                 <option value="hi">हिंदी</option>
@@ -325,69 +498,94 @@
                         <button className="btn-icon" onClick={() => setMessages([])} title="Clear Chat">
                             <Icons.Trash />
                         </button>
-                    </div>
+                    </motion.div>
                 </header>
 
-                <div ref={chatBoxRef} style={{ flex: 1, overflowY: 'auto', background: 'var(--bg-chat)', padding: '24px' }}>
+                <div ref={chatBoxRef} style={{ flex: 1, overflowY: 'auto', padding: '32px 28px', scrollBehavior: 'smooth' }}>
                     {messages.length === 0 ? (
-                        <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', maxWidth: '600px', margin: '0 auto' }}>
-                            <div style={{ marginBottom: '24px', color: 'var(--primary)', opacity: 0.8 }}><Icons.Shield /></div>
-                            <h2 style={{ fontSize: '24px', fontWeight: '600', marginBottom: '12px', color: 'var(--text-primary)' }}>{t('welcomeTitle')}</h2>
-                            <p style={{ fontSize: '15px', color: 'var(--text-secondary)', textAlign: 'center', marginBottom: '40px', lineHeight: '1.5' }}>{t('welcomeSubtitle')}</p>
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3, duration: 0.5 }}
+                            style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', maxWidth: '640px', margin: '0 auto' }}
+                        >
+                            <motion.div 
+                                animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                                style={{ marginBottom: '24px', color: 'var(--primary)', width: '64px', height: '64px', background: 'var(--bg-app)', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-bubble)' }}
+                            >
+                                <Icons.Shield />
+                            </motion.div>
+                            <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '12px', color: 'var(--text-primary)', textAlign: 'center' }}>{t('welcomeTitle')}</h2>
+                            <p style={{ fontSize: '16px', color: 'var(--text-secondary)', textAlign: 'center', marginBottom: '48px', lineHeight: '1.6', maxWidth: '80%' }}>{t('welcomeSubtitle')}</p>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', width: '100%' }}>
-                                {schemeSuggestions.map(s => (
-                                    <button key={s.id} onClick={() => { setInputValue(s.query); setTimeout(sendMessage, 50); }}
-                                            style={{
-                                                padding: '16px', borderRadius: '12px', border: '1px solid var(--border-color)',
-                                                background: 'var(--bg-app)', display: 'flex', alignItems: 'center', gap: '12px',
-                                                cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s', color: 'var(--text-primary)'
-                                            }}
-                                            onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--primary)'}
-                                            onMouseOut={(e) => e.currentTarget.style.borderColor = 'var(--border-color)'}
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', width: '100%' }}>
+                                {schemeSuggestions.map((s, idx) => (
+                                    <motion.button 
+                                        key={s.id} 
+                                        onMouseEnter={() => setActiveBgImage(s.bgImage)}
+                                        onMouseLeave={() => setActiveBgImage(null)}
+                                        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 + (idx * 0.1) }}
+                                        whileHover={{ scale: 1.02, y: -4, boxShadow: '0 10px 25px -5px rgba(37, 99, 235, 0.1), 0 8px 10px -6px rgba(37, 99, 235, 0.1)', borderColor: 'var(--primary)' }}
+                                        whileTap={{ scale: 0.98 }}
+                                        onClick={() => { setInputValue(s.query); setTimeout(sendMessage, 100); }}
+                                        style={{
+                                            padding: '20px', borderRadius: '16px', border: '1px solid var(--border-color)',
+                                            background: 'var(--bg-app)', display: 'flex', alignItems: 'flex-start', gap: '16px',
+                                            cursor: 'pointer', textAlign: 'left', transition: 'border-color 0.2s', color: 'var(--text-primary)',
+                                            boxShadow: 'var(--shadow-bubble)'
+                                        }}
                                     >
-                                        <div style={{ color: 'var(--primary)' }}>{s.icon}</div>
-                                        <span style={{ fontSize: '14px', fontWeight: '500' }}>{s.title}</span>
-                                    </button>
+                                        <div style={{ color: 'var(--primary)', background: 'var(--bg-hover)', padding: '10px', borderRadius: '10px' }}>{s.icon}</div>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                            <span style={{ fontSize: '15px', fontWeight: '600' }}>{s.title}</span>
+                                            <span style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>{s.query}</span>
+                                        </div>
+                                    </motion.button>
                                 ))}
                             </div>
-                        </div>
+                        </motion.div>
                     ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '800px', margin: '0 auto' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '850px', margin: '0 auto' }}>
                             <AnimatePresence>
                                 {messages.map(msg => (
                                     <motion.div key={msg.id}
-                                                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                                                style={{ display: 'flex', gap: '12px', flexDirection: msg.isUser ? 'row-reverse' : 'row' }}
+                                                initial={{ opacity: 0, y: 20, scale: 0.95 }} 
+                                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                                                style={{ display: 'flex', gap: '16px', flexDirection: msg.isUser ? 'row-reverse' : 'row' }}
                                     >
                                         <div style={{
-                                            width: '32px', height: '32px', borderRadius: '8px', flexShrink: 0,
+                                            width: '36px', height: '36px', borderRadius: '12px', flexShrink: 0,
                                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            background: msg.isUser ? 'var(--primary)' : 'var(--border-color)',
-                                            color: msg.isUser ? '#fff' : 'var(--text-secondary)'
+                                            background: msg.isUser ? 'linear-gradient(135deg, var(--primary), #8b5cf6)' : 'var(--bg-app)',
+                                            color: msg.isUser ? '#fff' : 'var(--primary)',
+                                            border: msg.isUser ? 'none' : '1px solid var(--border-color)',
+                                            boxShadow: 'var(--shadow-bubble)'
                                         }}>
                                             {msg.isUser ? <Icons.User /> : <Icons.Bot />}
                                         </div>
-                                        <div style={{
-                                            padding: '12px 16px', borderRadius: '12px', maxWidth: '80%',
-                                            fontSize: '15px', lineHeight: '1.5', whiteSpace: 'pre-wrap',
+                                        <div className="message-bubble" style={{
+                                            padding: '16px 20px', borderRadius: '20px', maxWidth: '75%',
+                                            fontSize: '15px', lineHeight: '1.6', whiteSpace: 'pre-wrap',
                                             background: msg.isUser ? 'var(--bg-bubble-user)' : 'var(--bg-bubble-bot)',
                                             color: msg.isUser ? 'var(--text-bubble-user)' : 'var(--text-bubble-bot)',
                                             border: msg.isUser ? 'none' : '1px solid var(--border-color)',
-                                            borderTopRightRadius: msg.isUser ? '4px' : '12px',
-                                            borderTopLeftRadius: msg.isUser ? '12px' : '4px'
+                                            borderTopRightRadius: msg.isUser ? '4px' : '20px',
+                                            borderTopLeftRadius: msg.isUser ? '20px' : '4px'
                                         }}>
                                             {msg.content}
                                         </div>
                                     </motion.div>
                                 ))}
                                 {isTyping && (
-                                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ display: 'flex', gap: '12px' }}>
-                                        <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)' }}><Icons.Bot /></div>
-                                        <div style={{ padding: '16px', borderRadius: '12px', background: 'var(--bg-bubble-bot)', display: 'flex', gap: '4px' }}>
-                                            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--text-secondary)', animation: 'pulse 1s infinite' }}></span>
-                                            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--text-secondary)', animation: 'pulse 1s infinite 0.2s' }}></span>
-                                            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--text-secondary)', animation: 'pulse 1s infinite 0.4s' }}></span>
+                                    <motion.div 
+                                        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} 
+                                        exit={{ opacity: 0, scale: 0.9 }}
+                                        style={{ display: 'flex', gap: '16px' }}
+                                    >
+                                        <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: 'var(--bg-app)', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', boxShadow: 'var(--shadow-bubble)' }}><Icons.Bot /></div>
+                                        <div className="message-bubble" style={{ padding: '18px 20px', borderRadius: '20px', borderTopLeftRadius: '4px', background: 'var(--bg-bubble-bot)', border: '1px solid var(--border-color)', display: 'flex', gap: '6px', alignItems: 'center' }}>
+                                            <span className="typing-dot"></span>
+                                            <span className="typing-dot"></span>
+                                            <span className="typing-dot"></span>
                                         </div>
                                     </motion.div>
                                 )}
@@ -396,12 +594,15 @@
                     )}
                 </div>
 
-                <div style={{ padding: '20px 24px', background: 'var(--bg-app)', borderTop: '1px solid var(--border-color)' }}>
-                    <div style={{
-                        display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--bg-body)',
-                        padding: '8px', borderRadius: '16px', border: '1px solid var(--border-color)'
+                <motion.div 
+                    initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5 }}
+                    style={{ padding: '24px 32px 32px', background: 'transparent', zIndex: 10 }}
+                >
+                    <div className="chat-input-wrapper" style={{
+                        display: 'flex', alignItems: 'center', gap: '12px', background: 'var(--bg-input)', backdropFilter: 'blur(12px)',
+                        padding: '12px 16px', borderRadius: '24px', maxWidth: '850px', margin: '0 auto'
                     }}>
-                        <button className="btn-icon" onClick={() => fileInputRef.current?.click()}>
+                        <button className="btn-icon" onClick={() => fileInputRef.current?.click()} style={{ borderRadius: '16px' }} title="Attach Document">
                             <Icons.Paperclip />
                         </button>
                         <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileUpload} accept="image/*,application/pdf" />
@@ -410,25 +611,34 @@
                             value={inputValue} onChange={e => setInputValue(e.target.value)}
                             onKeyPress={e => e.key === 'Enter' && sendMessage()}
                             placeholder={t('placeholder')}
-                            style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '15px', color: 'var(--text-primary)', padding: '0 8px' }}
+                            style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '16px', color: 'var(--text-primary)', padding: '0 8px' }}
                         />
 
-                        <button className={`btn-icon ${isListening ? 'active' : ''}`} onClick={handleVoice}>
+                        <button className={`btn-icon ${isListening ? 'active' : ''}`} onClick={handleVoice} style={{ borderRadius: '16px', color: isListening ? 'var(--danger)' : '' }} title="Voice Input">
                             <Icons.Mic />
                         </button>
 
-                        <button onClick={sendMessage} disabled={!inputValue.trim()} style={{
-                            width: '40px', height: '40px', borderRadius: '10px', border: 'none',
-                            background: inputValue.trim() ? 'var(--primary)' : 'var(--border-color)',
+                        <motion.button 
+                            whileHover={{ scale: inputValue.trim() ? 1.05 : 1 }}
+                            whileTap={{ scale: inputValue.trim() ? 0.95 : 1 }}
+                            onClick={sendMessage} disabled={!inputValue.trim()} style={{
+                            width: '44px', height: '44px', borderRadius: '18px', border: 'none',
+                            background: inputValue.trim() ? 'linear-gradient(135deg, var(--primary), #8b5cf6)' : 'var(--border-color)',
                             color: inputValue.trim() ? '#ffffff' : 'var(--text-secondary)',
                             display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: inputValue.trim() ? 'pointer' : 'default',
-                            transition: 'all 0.2s'
+                            transition: 'all 0.3s ease',
+                            boxShadow: inputValue.trim() ? '0 4px 12px rgba(37, 99, 235, 0.3)' : 'none'
                         }}>
                             <Icons.Send />
-                        </button>
+                        </motion.button>
                     </div>
+                    <div style={{ textAlign: 'center', marginTop: '16px', fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '500' }}>
+                        Yojana-Setu is an AI assistant and can make mistakes. Consider verifying important information.
+                    </div>
+                </motion.div>
                 </div>
-            </div>
+            </motion.div>
+            </>
         );
     }
 
