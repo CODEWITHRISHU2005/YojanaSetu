@@ -1,4 +1,4 @@
-package com.CodeWithRishu.YojanaSetu.dto;
+package com.CodeWithRishu.YojanaSetu.utils;
 
 import org.springframework.http.HttpStatus;
 

@@ -3,7 +3,7 @@ package com.CodeWithRishu.YojanaSetu.controller;
 
 import com.CodeWithRishu.YojanaSetu.service.ChatService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,10 +17,9 @@ public class ChatController {
 
     private final ChatService chatService;
 
-    @PostMapping("/ask")
-    public ResponseEntity<Flux<String>> askBot(@RequestParam(required = true) String message) {
-        Flux<String> response = chatService.getRAGResponse(message);
-        return ResponseEntity.ok(response);
+    @PostMapping(value = "/ask", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> askBot(@RequestParam(required = true) String message) {
+        return chatService.getRAGResponse(message);
     }
 
 }

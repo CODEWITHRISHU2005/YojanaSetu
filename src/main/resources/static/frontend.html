@@ -13,72 +13,112 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://unpkg.com/framer-motion@10/dist/framer-motion.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
-            --bg-body: #f1f5f9;
-            --bg-app: rgba(255, 255, 255, 0.85);
-            --bg-sidebar: rgba(248, 250, 252, 0.6);
+            --bg-body: radial-gradient(circle at 0% 0%, #f8fafc, #f1f5f9, #e2e8f0);
+            --bg-app: rgba(255, 255, 255, 0.45);
+            --bg-sidebar: rgba(255, 255, 255, 0.4);
             --bg-chat: transparent;
-            --bg-input: rgba(255, 255, 255, 0.95);
-            --bg-bubble-bot: #ffffff;
-            --bg-bubble-user: linear-gradient(135deg, #2563eb, #6366f1);
-            --bg-hover: rgba(37, 99, 235, 0.08);
+            --bg-input: rgba(255, 255, 255, 0.7);
+            --bg-bubble-bot: rgba(255, 255, 255, 0.85);
+            --bg-bubble-user: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #8b5cf6 100%);
+            --bg-hover: rgba(79, 70, 229, 0.08);
             --text-primary: #0f172a;
-            --text-secondary: #64748b;
+            --text-secondary: #475569;
             --text-bubble-bot: #1e293b;
             --text-bubble-user: #ffffff;
-            --border-color: rgba(226, 232, 240, 0.8);
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --shadow-app: none;
-            --shadow-bubble: 0 2px 5px rgba(0,0,0,0.02);
-            --glass-border: 1px solid rgba(255, 255, 255, 0.8);
+            --border-color: rgba(255, 255, 255, 0.5);
+            --border-color-card: rgba(255, 255, 255, 0.6);
+            --primary: #4f46e5;
+            --primary-glow: rgba(79, 70, 229, 0.15);
+            --shadow-app: 0 20px 50px rgba(0, 0, 0, 0.04);
+            --shadow-bubble: 0 4px 20px rgba(31, 38, 135, 0.04);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.4);
             --font-head: 'Outfit', sans-serif;
             --font-body: 'Inter', sans-serif;
         }
         body.dark {
-            --bg-body: #080b12;
-            --bg-app: rgba(15, 23, 42, 0.8);
-            --bg-sidebar: rgba(11, 15, 25, 0.7);
-            --bg-input: rgba(30, 41, 59, 0.9);
-            --bg-bubble-bot: #162032;
-            --bg-bubble-user: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            --bg-hover: rgba(59, 130, 246, 0.1);
+            --bg-body: radial-gradient(circle at 0% 0%, #030712, #0b0f19, #111827);
+            --bg-app: rgba(15, 23, 42, 0.45);
+            --bg-sidebar: rgba(11, 15, 25, 0.55);
+            --bg-input: rgba(30, 41, 59, 0.55);
+            --bg-bubble-bot: rgba(30, 41, 59, 0.6);
+            --bg-bubble-user: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            --bg-hover: rgba(99, 102, 241, 0.15);
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
             --text-bubble-bot: #f1f5f9;
-            --border-color: rgba(51, 65, 85, 0.6);
-            --shadow-app: none;
-            --shadow-bubble: 0 2px 5px rgba(0,0,0,0.2);
-            --glass-border: 1px solid rgba(255, 255, 255, 0.03);
+            --text-bubble-user: #ffffff;
+            --border-color: rgba(255, 255, 255, 0.07);
+            --border-color-card: rgba(255, 255, 255, 0.05);
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.3);
+            --shadow-app: 0 20px 50px rgba(0, 0, 0, 0.4);
+            --shadow-bubble: 0 4px 20px rgba(0, 0, 0, 0.15);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.06);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background-color: var(--bg-body); color: var(--text-primary);
+            background: var(--bg-body); color: var(--text-primary);
             height: 100vh; display: flex; align-items: center; justify-content: center;
-            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: background 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s ease;
             -webkit-font-smoothing: antialiased; font-family: var(--font-body); overflow: hidden;
         }
         h1, h2, h3 { font-family: var(--font-head); letter-spacing: -0.02em; }
         .ambient-bg {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: 0; pointer-events: none; overflow: hidden; background: var(--bg-body);
+            z-index: 0; pointer-events: none; overflow: hidden;
             transition: background 0.4s ease;
         }
-        .orb {
-            position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5;
-            animation: float 20s infinite alternate;
+        .ambient-bg::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: radial-gradient(rgba(79, 70, 229, 0.08) 1.5px, transparent 1.5px);
+            background-size: 28px 28px;
+            opacity: 0.6;
+            z-index: 1;
+            pointer-events: none;
         }
-        .orb-1 { background: rgba(59, 130, 246, 0.4); width: 400px; height: 400px; top: -100px; left: -100px; }
-        .orb-2 { background: rgba(139, 92, 246, 0.3); width: 500px; height: 500px; bottom: -150px; right: -100px; animation-delay: -5s; }
-        .orb-3 { background: rgba(16, 185, 129, 0.2); width: 300px; height: 300px; top: 40%; left: 60%; animation-delay: -10s; }
-        body.dark .orb-1 { background: rgba(59, 130, 246, 0.15); }
-        body.dark .orb-2 { background: rgba(139, 92, 246, 0.15); }
-        body.dark .orb-3 { background: rgba(16, 185, 129, 0.1); }
-        @keyframes float {
+        body.dark .ambient-bg::before {
+            background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1.5px, transparent 1.5px);
+            opacity: 0.8;
+        }
+        .orb {
+            position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.65;
+        }
+        .orb-1 {
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.45) 0%, rgba(79, 70, 229, 0) 70%);
+            width: 500px; height: 500px; top: -100px; left: -100px;
+            animation: float-orb-1 20s infinite alternate ease-in-out;
+        }
+        .orb-2 {
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.35) 0%, rgba(139, 92, 246, 0) 70%);
+            width: 600px; height: 600px; bottom: -150px; right: -100px;
+            animation: float-orb-2 24s infinite alternate ease-in-out;
+        }
+        .orb-3 {
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.2) 0%, rgba(236, 72, 153, 0) 70%);
+            width: 400px; height: 400px; top: 35%; left: 55%;
+            animation: float-orb-3 28s infinite alternate ease-in-out;
+        }
+        body.dark .orb-1 { background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, rgba(99, 102, 241, 0) 70%); }
+        body.dark .orb-2 { background: radial-gradient(circle, rgba(168, 85, 247, 0.2) 0%, rgba(168, 85, 247, 0) 70%); }
+        body.dark .orb-3 { background: radial-gradient(circle, rgba(236, 72, 153, 0.1) 0%, rgba(236, 72, 153, 0) 70%); }
+        @keyframes float-orb-1 {
             0% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -50px) scale(1.1); }
-            66% { transform: translate(-20px, 20px) scale(0.9); }
+            50% { transform: translate(80px, -60px) scale(1.15); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+        @keyframes float-orb-2 {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-100px, 80px) scale(0.9); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+        @keyframes float-orb-3 {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(70px, 90px) scale(1.1); }
             100% { transform: translate(0, 0) scale(1); }
         }
         #root {
@@ -86,49 +126,398 @@
             justify-content: center; align-items: center; z-index: 1; position: relative;
         }
         .app-container {
-            width: 100%; max-width: 100%; height: 100%; max-height: 100%;
+            width: 100%; height: 100%;
             background: transparent;
             display: flex; flex-direction: row; overflow: hidden;
-            border: none; transition: all 0.4s ease;
+            border: none;
             position: relative; z-index: 1;
         }
         .sidebar {
-            width: 280px; height: 100%; background: var(--bg-sidebar); border-right: 1px solid var(--border-color);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            display: flex; flex-direction: column; padding: 24px; transition: all 0.3s ease;
-            box-shadow: 4px 0 24px rgba(0,0,0,0.05); z-index: 20;
+            height: 100%; background: var(--bg-sidebar); border-right: 1px solid var(--border-color);
+            backdrop-filter: blur(32px) saturate(180%); -webkit-backdrop-filter: blur(32px) saturate(180%);
+            display: flex; flex-direction: column; padding: 24px;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.02); z-index: 20;
+            position: relative;
         }
+        body.dark .sidebar { box-shadow: 10px 0 35px rgba(0,0,0,0.15); }
         .main-chat-area {
             flex: 1; height: 100%; display: flex; flex-direction: column; position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
         }
-        body.dark .sidebar { box-shadow: 4px 0 24px rgba(0,0,0,0.2); }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        body.dark .main-chat-area {
+            background: rgba(0, 0, 0, 0.15);
+        }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
         .btn-icon {
             display: flex; align-items: center; justify-content: center;
-            width: 40px; height: 40px; border-radius: 12px; border: none; background: transparent;
-            color: var(--text-secondary); cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 42px; height: 42px; border-radius: 14px; border: 1px solid transparent; background: transparent;
+            color: var(--text-secondary); cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
-        .btn-icon:hover { background: var(--bg-hover); color: var(--primary); transform: scale(1.05); }
-        .btn-icon:active { transform: scale(0.95); }
-        .btn-icon.active { color: var(--primary); background: var(--bg-hover); }
-        .chat-input-wrapper { transition: all 0.3s ease; border: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-        .chat-input-wrapper:focus-within { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2), 0 6px 16px rgba(0,0,0,0.05); transform: translateY(-1px); }
+        .btn-icon:hover {
+            background: var(--bg-hover); color: var(--primary); border-color: var(--border-color);
+            transform: translateY(-2px); box-shadow: 0 4px 12px var(--primary-glow);
+        }
+        .btn-icon:active { transform: translateY(0) scale(0.95); }
+        .btn-icon.active { color: var(--primary); background: var(--bg-hover); border-color: var(--border-color); }
+        .chat-input-wrapper {
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            background: var(--bg-input);
+            backdrop-filter: blur(24px);
+        }
+        .chat-input-wrapper:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow), 0 15px 35px rgba(99, 102, 241, 0.1);
+            transform: translateY(-2px);
+        }
         input:focus { outline: none; }
-        select { -webkit-appearance: none; -moz-appearance: none; appearance: none; outline: none; }
-        @keyframes typing {
-            0%, 100% { transform: translateY(0); opacity: 0.4; }
-            50% { transform: translateY(-4px); opacity: 1; }
+        .message-bubble {
+            box-shadow: var(--shadow-bubble);
+            position: relative;
+            transition: border-color 0.3s ease;
         }
-        .typing-dot {
-            width: 6px; height: 6px; border-radius: 50%; background: var(--text-secondary);
-            animation: typing 1.4s infinite ease-in-out both;
+        
+        .typing-wave {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
         }
-        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
-        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
-        .message-bubble { box-shadow: var(--shadow-bubble); position: relative; }
+        .typing-bar {
+            width: 3px;
+            height: 12px;
+            border-radius: 1.5px;
+            background-color: var(--primary);
+            animation: bounce-sound 1.2s infinite ease-in-out;
+        }
+        .typing-bar:nth-child(1) { animation-delay: -0.4s; }
+        .typing-bar:nth-child(2) { animation-delay: -0.2s; }
+        .typing-bar:nth-child(3) { animation-delay: 0s; }
+        @keyframes bounce-sound {
+            0%, 100% { transform: scaleY(0.4); }
+            50% { transform: scaleY(1.3); }
+        }
+
+        .markdown-content p { margin-bottom: 12px; line-height: 1.6; }
+        .markdown-content p:last-child { margin-bottom: 0; }
+        .markdown-content ul, .markdown-content ol { margin-left: 24px; margin-bottom: 12px; }
+        .markdown-content li { margin-bottom: 6px; line-height: 1.6; }
+        .markdown-content strong { font-weight: 700; color: inherit; }
+        
+        .markdown-content code.inline-code {
+            font-family: monospace;
+            padding: 3px 6px;
+            border-radius: 6px;
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .markdown-content pre {
+            margin: 14px 0;
+            padding: 14px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #f8fafc;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        body.dark .markdown-content pre {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 12px;
+            margin: -14px -14px 10px -14px;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-top-left-radius: 11px;
+            border-top-right-radius: 11px;
+            font-size: 11px;
+            color: #94a3b8;
+            font-family: var(--font-body);
+        }
+        .copy-code-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.2s;
+            font-size: 11px;
+        }
+        .copy-code-btn:hover { color: #f8fafc; }
+
+        .markdown-content table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 16px 0;
+            font-size: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.01);
+        }
+        .markdown-content th, .markdown-content td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            text-align: left;
+        }
+        .markdown-content th:last-child, .markdown-content td:last-child {
+            border-right: none;
+        }
+        .markdown-content tr:last-child td {
+            border-bottom: none;
+        }
+        .markdown-content th {
+            background-color: var(--bg-hover);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .markdown-content tr:nth-child(even) {
+            background-color: rgba(99, 102, 241, 0.02);
+        }
+        body.dark .markdown-content tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.01);
+        }
+        .markdown-content a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 1px dashed var(--primary);
+            transition: all 0.2s;
+        }
+        .markdown-content a:hover {
+            color: var(--primary-hover);
+            border-bottom-style: solid;
+        }
+
+        .sidebar-toggle-btn {
+            position: absolute;
+            right: -16px;
+            top: 28px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            z-index: 30;
+            color: var(--text-secondary);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .sidebar-toggle-btn:hover {
+            color: var(--primary);
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px var(--primary-glow);
+        }
+
+        .lang-select-container {
+            position: relative;
+        }
+        .lang-dropdown-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(8px);
+        }
+        .lang-dropdown-btn:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+        .lang-dropdown-menu {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            background: var(--bg-input);
+            backdrop-filter: blur(24px);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            z-index: 50;
+            overflow: hidden;
+            min-width: 130px;
+        }
+        .lang-dropdown-item {
+            padding: 10px 16px;
+            width: 100%;
+            text-align: left;
+            border: none;
+            background: transparent;
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .lang-dropdown-item:hover {
+            background: var(--bg-hover);
+            color: var(--primary);
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: auto;
+            backdrop-filter: blur(8px);
+        }
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: status-pulse 2s infinite;
+        }
+        @keyframes status-pulse {
+            0% { transform: scale(0.9); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.5; }
+        }
+
+        .listening-wave-container {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            height: 20px;
+            padding: 0 10px;
+        }
+        .listening-bar {
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(to top, var(--primary), #d946ef);
+            border-radius: 1.5px;
+            animation: wave-pulse 1.2s infinite ease-in-out;
+        }
+        .listening-bar:nth-child(1) { animation-delay: 0.1s; height: 30%; }
+        .listening-bar:nth-child(2) { animation-delay: 0.3s; height: 70%; }
+        .listening-bar:nth-child(3) { animation-delay: 0.5s; height: 95%; }
+        .listening-bar:nth-child(4) { animation-delay: 0.2s; height: 50%; }
+        .listening-bar:nth-child(5) { animation-delay: 0.4s; height: 80%; }
+        @keyframes wave-pulse {
+            0%, 100% { transform: scaleY(0.2); }
+            50% { transform: scaleY(1); }
+        }
+
+        .tts-wave {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            height: 12px;
+            margin-left: 6px;
+        }
+        .tts-bar {
+            width: 2px;
+            height: 100%;
+            background: var(--primary);
+            border-radius: 1px;
+            animation: tts-pulse 1s infinite ease-in-out;
+        }
+        .tts-bar:nth-child(1) { animation-delay: 0.1s; height: 40%; }
+        .tts-bar:nth-child(2) { animation-delay: 0.3s; height: 100%; }
+        .tts-bar:nth-child(3) { animation-delay: 0.5s; height: 60%; }
+        @keyframes tts-pulse {
+            0%, 100% { transform: scaleY(0.3); }
+            50% { transform: scaleY(1); }
+        }
+
+        .doc-preview-capsule {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            margin-bottom: 12px;
+            width: max-content;
+            max-width: 100%;
+            box-shadow: var(--shadow-bubble);
+            backdrop-filter: blur(12px);
+        }
+        .doc-preview-thumb {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-hover);
+            color: var(--primary);
+        }
+        .doc-preview-info {
+            display: flex;
+            flex-direction: column;
+            max-width: 180px;
+        }
+        .doc-preview-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .doc-preview-status {
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        .doc-preview-close {
+            cursor: pointer;
+            color: var(--text-secondary);
+            border: none;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+        .doc-preview-close:hover {
+            background: rgba(239, 68, 68, 0.12);
+            color: #ef4444;
+        }
     </style>
 </head>
 <body>
@@ -157,7 +546,10 @@
         Home: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
         Plus: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
         Settings: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>,
-        MessageSquare: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        MessageSquare: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
+        ChevronLeft: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>,
+        ChevronRight: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>,
+        FileText: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
     };
 
     const translations = {
@@ -170,6 +562,11 @@
             uploadSuccess: 'Document attached. Extracting text...',
             uploadError: 'Upload failed. Please ensure the file is valid.',
             ocrSuccess: 'Text extracted from document',
+            ocrProcessing: 'Extracting text...',
+            ocrComplete: 'Text extracted successfully',
+            ocrFailed: 'Extraction failed',
+            noText: 'No text found in document',
+            attached: 'Document attached'
         },
         hi: {
             appTitle: 'योजना-सेतु',
@@ -180,6 +577,11 @@
             uploadSuccess: 'दस्तावेज़ संलग्न। टेक्स्ट निकाला जा रहा है...',
             uploadError: 'अपलोड विफल। कृपया सुनिश्चित करें कि फ़ाइल मान्य है।',
             ocrSuccess: 'दस्तावेज़ से टेक्स्ट निकाला गया',
+            ocrProcessing: 'टेक्स्ट निकाला जा रहा है...',
+            ocrComplete: 'पाठ निकाला गया',
+            ocrFailed: 'निष्कर्षण विफल रहा',
+            noText: 'कोई पाठ नहीं मिला',
+            attached: 'दस्तावेज़ संलग्न'
         }
     };
 
@@ -190,16 +592,90 @@
         { id: 4, icon: <Icons.Home />, title: 'PM Awas Yojana', query: 'Am I eligible for PM Awas Yojana housing scheme?', bgImage: 'assets/pm_awas_bg.png' }
     ];
 
+    const TitleReveal = ({ text, color }) => {
+        const letters = Array.from(text);
+        const container = {
+            hidden: { opacity: 0 },
+            visible: (i = 1) => ({
+                opacity: 1,
+                transition: { staggerChildren: 0.06, delayChildren: 0.3 }
+            }),
+        };
+        const child = {
+            visible: {
+                opacity: 1,
+                y: 0,
+                transition: {
+                    type: "spring",
+                    damping: 12,
+                    stiffness: 200,
+                },
+            },
+            hidden: {
+                opacity: 0,
+                y: 20,
+                transition: {
+                    type: "spring",
+                    damping: 12,
+                    stiffness: 200,
+                },
+            },
+        };
+        return (
+            <motion.div
+                style={{ display: "flex", overflow: "hidden" }}
+                variants={container}
+                initial="hidden"
+                animate="visible"
+            >
+                {letters.map((letter, index) => (
+                    <motion.span
+                        variants={child}
+                        key={index}
+                        style={{
+                            fontSize: '44px',
+                            fontWeight: '800',
+                            fontFamily: 'var(--font-head)',
+                            background: color,
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            display: 'inline-block'
+                        }}
+                    >
+                        {letter === ' ' ? '\u00A0' : letter}
+                    </motion.span>
+                ))}
+            </motion.div>
+        );
+    };
+
     function YojanaSetu() {
         const [showSplash, setShowSplash] = useState(true);
         const [activeBgImage, setActiveBgImage] = useState(null);
+        const [sessions, setSessions] = useState(() => {
+            const saved = localStorage.getItem('yojana_setu_sessions');
+            return saved ? JSON.parse(saved) : [];
+        });
+        const [currentSessionId, setCurrentSessionId] = useState(() => {
+            const saved = localStorage.getItem('yojana_setu_current_session_id');
+            return saved || null;
+        });
         const [messages, setMessages] = useState([]);
+        const [speakingMessageId, setSpeakingMessageId] = useState(null);
+
         const [inputValue, setInputValue] = useState('');
         const [isTyping, setIsTyping] = useState(false);
         const [language, setLanguage] = useState('en');
         const [darkMode, setDarkMode] = useState(false);
         const [voiceEnabled, setVoiceEnabled] = useState(true);
         const [isListening, setIsListening] = useState(false);
+
+        // New Layout & UI State
+        const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+        const [attachedFile, setAttachedFile] = useState(null);
+        const [extractedText, setExtractedText] = useState('');
+        const [ocrLoading, setOcrLoading] = useState(false);
+        const [langOpen, setLangOpen] = useState(false);
 
         const chatBoxRef = useRef(null);
         const fileInputRef = useRef(null);
@@ -222,6 +698,34 @@
             else document.body.classList.remove('dark');
         }, [darkMode]);
 
+        // Sync messages whenever active session changes or session list is updated
+        useEffect(() => {
+            if (currentSessionId) {
+                const session = sessions.find(s => s.id === currentSessionId);
+                if (session) {
+                    setMessages(session.messages || []);
+                } else {
+                    setMessages([]);
+                }
+            } else {
+                setMessages([]);
+            }
+        }, [currentSessionId, sessions]);
+
+        // Persist sessions to localStorage
+        useEffect(() => {
+            localStorage.setItem('yojana_setu_sessions', JSON.stringify(sessions));
+        }, [sessions]);
+
+        // Persist current active session ID
+        useEffect(() => {
+            if (currentSessionId) {
+                localStorage.setItem('yojana_setu_current_session_id', currentSessionId);
+            } else {
+                localStorage.removeItem('yojana_setu_current_session_id');
+            }
+        }, [currentSessionId]);
+
         useEffect(() => {
             if (chatBoxRef.current) {
                 chatBoxRef.current.scrollTo({
@@ -231,9 +735,126 @@
             }
         }, [messages, isTyping]);
 
-        const addMessage = useCallback((content, isUser = false) => {
-            setMessages(prev => [...prev, { id: Date.now(), content, isUser, timestamp: new Date() }]);
+        // marked markdown configuration & window dynamic functions
+        useEffect(() => {
+            if (typeof marked !== 'undefined') {
+                const renderer = new marked.Renderer();
+                renderer.code = (code, language) => {
+                    const uniqueId = 'code_' + Math.random().toString(36).substring(2, 9);
+                    if (!window.codeBlocks) window.codeBlocks = {};
+                    window.codeBlocks[uniqueId] = code;
+                    
+                    return `
+                        <pre>
+                            <div class="code-header">
+                                <span>${language || 'code'}</span>
+                                <button class="copy-code-btn" onclick="window.copyCodeBlock('${uniqueId}', this)">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle;"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                                    <span>Copy</span>
+                                </button>
+                            </div>
+                            <code class="language-${language}">${code.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code>
+                        </pre>
+                    `;
+                };
+                
+                renderer.codespan = (code) => {
+                    return `<code class="inline-code">${code}</code>`;
+                };
+                
+                marked.use({ renderer });
+            }
+            
+            window.copyCodeBlock = (id, btn) => {
+                const text = window.codeBlocks?.[id] || '';
+                navigator.clipboard.writeText(text).then(() => {
+                    const originalHtml = btn.innerHTML;
+                    btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; color:#10b981;"><polyline points="20 6 9 17 4 12"/></svg> <span style="color:#10b981;">Copied!</span>`;
+                    setTimeout(() => {
+                        btn.innerHTML = originalHtml;
+                    }, 2000);
+                });
+            };
         }, []);
+
+        // Listen for language selector clicks outside
+        useEffect(() => {
+            const handleOutsideClick = (e) => {
+                if (!e.target.closest('.lang-select-container')) {
+                    setLangOpen(false);
+                }
+            };
+            document.addEventListener('click', handleOutsideClick);
+            return () => document.removeEventListener('click', handleOutsideClick);
+        }, []);
+
+        const startNewChat = () => {
+            setCurrentSessionId(null);
+            setMessages([]);
+        };
+
+        const deleteSession = (id) => {
+            setSessions(prev => prev.filter(s => s.id !== id));
+            if (currentSessionId === id) {
+                const remaining = sessions.filter(s => s.id !== id);
+                if (remaining.length > 0) {
+                    setCurrentSessionId(remaining[0].id);
+                } else {
+                    startNewChat();
+                }
+            }
+        };
+
+        const clearCurrentChat = () => {
+            if (currentSessionId) {
+                setSessions(prev => prev.map(s => {
+                    if (s.id === currentSessionId) {
+                        return { ...s, messages: [] };
+                    }
+                    return s;
+                }));
+            } else {
+                setMessages([]);
+            }
+        };
+
+        const addMessage = useCallback((content, isUser = false) => {
+            setSessions(prevSessions => {
+                let sessionId = currentSessionId;
+                let updatedSessions = [...prevSessions];
+
+                if (!sessionId) {
+                    sessionId = 'session_' + Date.now();
+                    const newSession = {
+                        id: sessionId,
+                        title: isUser ? (content.substring(0, 30) + (content.length > 30 ? '...' : '')) : 'New Chat',
+                        messages: [],
+                        timestamp: new Date()
+                    };
+                    updatedSessions = [newSession, ...updatedSessions];
+                    setTimeout(() => setCurrentSessionId(sessionId), 0);
+                }
+
+                updatedSessions = updatedSessions.map(session => {
+                    if (session.id === sessionId) {
+                        const newMsg = { id: Date.now() + Math.random(), content, isUser, timestamp: new Date() };
+                        let title = session.title;
+                        if (session.messages.length === 0 && isUser) {
+                            title = content.substring(0, 30) + (content.length > 30 ? '...' : '');
+                        }
+                        return {
+                            ...session,
+                            title,
+                            messages: [...session.messages, newMsg],
+                            timestamp: new Date()
+                        };
+                    }
+                    return session;
+                });
+
+                return updatedSessions;
+            });
+        }, [currentSessionId]);
 
         const handleVoiceToggle = () => {
             setVoiceEnabled(prevState => {
@@ -245,40 +866,164 @@
             });
         };
 
-        const sendMessage = async () => {
-            if (!inputValue.trim()) return;
-            const userMessage = inputValue;
+        const speakText = (text, messageId = null) => {
+            if (!window.speechSynthesis) return;
+            window.speechSynthesis.cancel();
+            
+            if (speakingMessageId === messageId && messageId !== null) {
+                setSpeakingMessageId(null);
+                return;
+            }
+
+            const cleanText = text.replace(/[*#_\-`~[\]()]/g, '');
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = language === 'hi' ? 'hi-IN' : 'en-IN';
+            
+            utterance.onend = () => setSpeakingMessageId(null);
+            utterance.onerror = () => setSpeakingMessageId(null);
+
+            if (messageId !== null) {
+                setSpeakingMessageId(messageId);
+            }
+            window.speechSynthesis.speak(utterance);
+        };
+
+        const sendMessage = async (overrideValue = '') => {
+            const queryText = (overrideValue || inputValue).trim();
+            if (!queryText && !extractedText) return;
             setInputValue('');
-            addMessage(userMessage, true);
+
+            // Append OCR extracted text dynamically if available
+            let finalQuery = queryText;
+            if (extractedText && !overrideValue) {
+                const baseText = queryText || (language === 'hi' ? "इस दस्तावेज़ की व्याख्या करें" : "Please analyze this attached document.");
+                finalQuery = `${baseText}\n\n[Attached Document Text]:\n${extractedText}`;
+            }
+
+            const activeFileName = attachedFile?.name || '';
+            const hasFile = !!extractedText;
+
+            // Clear file preview states
+            setAttachedFile(null);
+            setExtractedText('');
+
+            let sessionId = currentSessionId;
+            let targetSessions = [...sessions];
+            if (!sessionId) {
+                sessionId = 'session_' + Date.now();
+                const newSession = {
+                    id: sessionId,
+                    title: queryText ? (queryText.substring(0, 30) + (queryText.length > 30 ? '...' : '')) : 'Document Chat',
+                    messages: [],
+                    timestamp: new Date()
+                };
+                targetSessions = [newSession, ...targetSessions];
+                setSessions(targetSessions);
+                setCurrentSessionId(sessionId);
+            }
+
+            const userMsg = { 
+                id: 'user_' + Date.now(), 
+                content: queryText || (language === 'hi' ? "इस दस्तावेज़ की व्याख्या करें" : "Please analyze this attached document."), 
+                isUser: true, 
+                hasAttachment: hasFile,
+                attachmentName: activeFileName,
+                timestamp: new Date() 
+            };
+            
+            setSessions(prev => prev.map(s => {
+                if (s.id === sessionId) {
+                    const title = s.messages.length === 0 ? (userMsg.content.substring(0, 30) + (userMsg.content.length > 30 ? '...' : '')) : s.title;
+                    return {
+                        ...s,
+                        title,
+                        messages: [...s.messages, userMsg],
+                        timestamp: new Date()
+                    };
+                }
+                return s;
+            }));
+
             setIsTyping(true);
 
+            const botMessageId = 'bot_' + Date.now();
+            const botPlaceholderMsg = { id: botMessageId, content: '', isUser: false, timestamp: new Date() };
+            
+            setSessions(prev => prev.map(s => {
+                if (s.id === sessionId) {
+                    return { ...s, messages: [...s.messages, botPlaceholderMsg] };
+                }
+                return s;
+            }));
+
             try {
-                const response = await fetch(`${API_BASE_URL}/api/chat/ask?message=${encodeURIComponent(userMessage)}`, {
+                const response = await fetch(`${API_BASE_URL}/api/chat/ask?message=${encodeURIComponent(finalQuery)}`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'text/plain' }
+                    headers: { 'Content-Type': 'application/json' }
                 });
 
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const data = await response.text();
+                
+                setIsTyping(false);
 
-                if (data && data.trim()) {
-                    addMessage(data, false);
-                    if (voiceEnabled && window.speechSynthesis) {
-                        window.speechSynthesis.cancel();
-                        const utterance = new SpeechSynthesisUtterance(data);
-                        utterance.lang = language === 'hi' ? 'hi-IN' : 'en-IN';
-                        window.speechSynthesis.speak(utterance);
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let done = false;
+                let accumulatedText = '';
+                let buffer = '';
+
+                while (!done) {
+                    const { value, done: readerDone } = await reader.read();
+                    done = readerDone;
+                    if (value) {
+                        buffer += decoder.decode(value, { stream: !done });
+                        const lines = buffer.split('\n');
+                        buffer = lines.pop(); // Keep the last partial line in the buffer
+                        
+                        let updated = false;
+                        for (const line of lines) {
+                            if (line.startsWith('data:')) {
+                                let dataContent = line.substring(5);
+                                if (dataContent.startsWith(' ')) {
+                                    dataContent = dataContent.substring(1);
+                                }
+                                accumulatedText += dataContent;
+                                updated = true;
+                            }
+                        }
+                        
+                        if (updated) {
+                            setSessions(prev => prev.map(s => {
+                                if (s.id === sessionId) {
+                                    return {
+                                        ...s,
+                                        messages: s.messages.map(m => m.id === botMessageId ? { ...m, content: accumulatedText } : m)
+                                    };
+                                }
+                                return s;
+                            }));
+                        }
                     }
                 }
+
+                if (voiceEnabled && window.speechSynthesis && accumulatedText) {
+                    speakText(accumulatedText, botMessageId);
+                }
+
             } catch (error) {
                 console.error('API Error:', error);
-                setTimeout(() => {
-                   addMessage("I'm having trouble connecting to the server right now. Please ensure the backend is running.", false);
-                   setIsTyping(false);
-                }, 1000);
-                return;
-            } 
-            setIsTyping(false);
+                setIsTyping(false);
+                const errorMessage = "I'm having trouble connecting to the server right now. Please ensure the backend is running.";
+                setSessions(prev => prev.map(s => {
+                    if (s.id === sessionId) {
+                        return {
+                            ...s,
+                            messages: s.messages.map(m => m.id === botMessageId ? { ...m, content: errorMessage } : m)
+                        };
+                    }
+                    return s;
+                }));
+            }
         };
 
         const handleVoice = () => {
@@ -302,22 +1047,53 @@
         const handleFileUpload = async (event) => {
             const file = event.target.files[0];
             if (!file) return;
-            addMessage(t('uploadSuccess'), false);
-            setIsTyping(true);
+
+            let previewUrl = '';
+            if (file.type.startsWith('image/')) {
+                previewUrl = URL.createObjectURL(file);
+            }
+
+            setAttachedFile({
+                name: file.name,
+                size: (file.size / 1024).toFixed(1) + ' KB',
+                type: file.type,
+                preview: previewUrl,
+                status: language === 'hi' ? 'टेक्स्ट निकाला जा रहा है...' : 'Extracting text...'
+            });
+            setOcrLoading(true);
 
             try {
-                const imageUrl = URL.createObjectURL(file);
-                const result = await Tesseract.recognize(imageUrl, 'eng+hin');
-                URL.revokeObjectURL(imageUrl);
+                let textResult = '';
+                if (file.type.startsWith('image/')) {
+                    const imageUrl = previewUrl || URL.createObjectURL(file);
+                    const result = await Tesseract.recognize(imageUrl, 'eng+hin');
+                    textResult = result.data.text;
+                } else {
+                    textResult = `[Attached file: ${file.name}]`;
+                }
 
-                if (result.data.text.trim()) {
-                    setInputValue((prev) => prev + " [Attached Text: " + result.data.text.substring(0, 100) + "...] ");
+                if (textResult && textResult.trim()) {
+                    setExtractedText(textResult);
+                    setAttachedFile(prev => prev ? { ...prev, status: language === 'hi' ? 'पाठ निकाला गया' : 'Text extracted successfully' } : null);
+                } else {
+                    setAttachedFile(prev => prev ? { ...prev, status: language === 'hi' ? 'कोई पाठ नहीं मिला' : 'No text found in document' } : null);
                 }
             } catch (error) {
-                addMessage(t('uploadError'), false);
+                console.error(error);
+                setAttachedFile(prev => prev ? { ...prev, status: language === 'hi' ? 'निष्कर्षण विफल रहा' : 'Extraction failed' } : null);
             } finally {
-                setIsTyping(false);
+                setOcrLoading(false);
             }
+        };
+
+        const removeAttachment = () => {
+            if (attachedFile?.preview) {
+                URL.revokeObjectURL(attachedFile.preview);
+            }
+            setAttachedFile(null);
+            setExtractedText('');
+            setOcrLoading(false);
+            if (fileInputRef.current) fileInputRef.current.value = '';
         };
 
         return (
@@ -336,17 +1112,24 @@
                             overflow: 'hidden'
                         }}
                     >
+                        {/* Custom Bouncing Outer Rings */}
                         <motion.div
-                            initial={{ scale: 0, opacity: 0 }}
-                            animate={{ scale: [0, 1.5, 2], opacity: [0, 0.5, 0] }}
-                            transition={{ duration: 2.5, repeat: Infinity, ease: "easeOut" }}
-                            style={{ position: 'absolute', width: '200px', height: '200px', borderRadius: '50%', border: '2px solid rgba(37, 99, 235, 0.4)' }}
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+                            style={{
+                                position: 'absolute',
+                                width: '220px',
+                                height: '220px',
+                                borderRadius: '44px',
+                                border: '3px dashed var(--primary)',
+                                opacity: 0.12
+                            }}
                         />
                         <motion.div
-                            initial={{ scale: 0, opacity: 0 }}
-                            animate={{ scale: [0, 1.5, 2], opacity: [0, 0.3, 0] }}
-                            transition={{ duration: 2.5, repeat: Infinity, ease: "easeOut", delay: 0.8 }}
-                            style={{ position: 'absolute', width: '250px', height: '250px', borderRadius: '50%', border: '2px solid rgba(139, 92, 246, 0.4)' }}
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: [0.8, 1.4, 2], opacity: [0, 0.4, 0] }}
+                            transition={{ duration: 3, repeat: Infinity, ease: "easeOut" }}
+                            style={{ position: 'absolute', width: '280px', height: '280px', borderRadius: '50%', border: '2px solid rgba(139, 92, 246, 0.3)' }}
                         />
 
                         <motion.div
@@ -354,10 +1137,10 @@
                             animate={{ scale: 1, opacity: 1, rotateY: 0 }}
                             transition={{ duration: 1.2, type: 'spring', bounce: 0.4 }}
                             style={{
-                                width: '120px', height: '120px', borderRadius: '30px',
-                                background: 'linear-gradient(135deg, #2563eb, #8b5cf6)',
+                                width: '120px', height: '120px', borderRadius: '35px',
+                                background: 'linear-gradient(135deg, #4f46e5, #8b5cf6, #d946ef)',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                color: 'white', boxShadow: '0 20px 40px rgba(37, 99, 235, 0.4), inset 0 0 0 2px rgba(255,255,255,0.2)',
+                                color: 'white', boxShadow: '0 20px 40px rgba(79, 70, 229, 0.3), inset 0 0 0 2px rgba(255,255,255,0.2)',
                                 marginBottom: '32px', position: 'relative', zIndex: 10
                             }}
                         >
@@ -373,31 +1156,19 @@
                             </motion.svg>
                         </motion.div>
                         <div style={{ overflow: 'hidden' }}>
-                            <motion.h1
-                                initial={{ y: 50, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                transition={{ delay: 0.4, duration: 0.8, type: 'spring', damping: 15 }}
-                                style={{ 
-                                    fontSize: '48px', fontWeight: '800', 
-                                    background: 'linear-gradient(to right, var(--primary), #8b5cf6)',
-                                    WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                                    marginBottom: '8px', fontFamily: 'var(--font-head)' 
-                                }}
-                            >
-                                {t('appTitle')}
-                            </motion.h1>
+                            <TitleReveal text={t('appTitle')} color="linear-gradient(to right, var(--primary), #d946ef)" />
                         </div>
                         <motion.div 
                             initial={{ width: 0 }}
-                            animate={{ width: '80px' }}
-                            transition={{ delay: 0.6, duration: 0.8 }}
-                            style={{ height: '4px', background: 'linear-gradient(90deg, var(--primary), #8b5cf6)', borderRadius: '2px', marginBottom: '20px' }}
+                            animate={{ width: '100px' }}
+                            transition={{ delay: 0.8, duration: 0.8 }}
+                            style={{ height: '4px', background: 'linear-gradient(90deg, var(--primary), #d946ef)', borderRadius: '2px', marginTop: '12px', marginBottom: '20px' }}
                         />
                         <motion.p
                             initial={{ opacity: 0, filter: 'blur(10px)' }}
                             animate={{ opacity: 1, filter: 'blur(0px)' }}
-                            transition={{ delay: 0.8, duration: 1 }}
-                            style={{ fontSize: '20px', color: 'var(--text-secondary)', fontWeight: '500', letterSpacing: '0.5px' }}
+                            transition={{ delay: 1, duration: 1 }}
+                            style={{ fontSize: '18px', color: 'var(--text-secondary)', fontWeight: '600', letterSpacing: '0.5px', textAlign: 'center', maxWidth: '80%' }}
                         >
                             {t('appSubtitle')}
                         </motion.p>
@@ -412,12 +1183,12 @@
                         style={{
                             position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
                             backgroundImage: `url(${s.bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center',
-                            opacity: activeBgImage === s.bgImage ? (darkMode ? 0.7 : 0.8) : 0, transition: 'opacity 0.8s ease-in-out',
+                            opacity: activeBgImage === s.bgImage ? (darkMode ? 0.6 : 0.7) : 0, transition: 'opacity 0.8s ease-in-out',
                             mixBlendMode: 'normal'
                         }}
                     />
                 ))}
-                <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: darkMode ? 'rgba(11, 15, 25, 0.4)' : 'rgba(248, 250, 252, 0.3)', transition: 'background 0.5s ease', pointerEvents: 'none' }}></div>
+                <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: darkMode ? 'rgba(3, 7, 18, 0.65)' : 'rgba(248, 250, 252, 0.45)', transition: 'background 0.5s ease', pointerEvents: 'none' }}></div>
                 <div className="orb orb-1"></div>
                 <div className="orb orb-2"></div>
                 <div className="orb orb-3"></div>
@@ -425,217 +1196,483 @@
 
             <motion.div 
                 className="app-container"
-                initial={{ opacity: 0, scale: 0.96, y: 20 }}
+                initial={{ opacity: 0, scale: 0.97, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 3.1, ease: [0.16, 1, 0.3, 1] }}
             >
-                <div className="sidebar">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
-                        <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'linear-gradient(135deg, var(--primary), #8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
-                            <Icons.Shield />
-                        </div>
-                        <h1 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>{t('appTitle')}</h1>
-                    </div>
-                    
-                    <button onClick={() => setMessages([])} style={{
-                        display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px',
-                        background: 'var(--bg-hover)', border: '1px solid var(--border-color)', color: 'var(--text-primary)',
-                        cursor: 'pointer', fontWeight: '600', fontSize: '14px', transition: 'all 0.2s', marginBottom: '24px',
-                        boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
-                    }} onMouseOver={e => e.currentTarget.style.borderColor = 'var(--primary)'} onMouseOut={e => e.currentTarget.style.borderColor = 'var(--border-color)'}>
-                        <Icons.Plus /> New Chat
+                {/* Collapsible Sidebar Wrapper with Motion */}
+                <motion.div 
+                    className="sidebar"
+                    animate={{ width: sidebarCollapsed ? 76 : 280 }}
+                    transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                >
+                    {/* Collapse Sidebar Button on the right boundary */}
+                    <button 
+                        className="sidebar-toggle-btn"
+                        onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                        title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                    >
+                        {sidebarCollapsed ? <Icons.ChevronRight /> : <Icons.ChevronLeft />}
                     </button>
 
-                    <div style={{ flex: 1, overflowY: 'auto' }}>
-                        <p style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>Recent</p>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            {messages.length > 0 ? (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '8px', cursor: 'pointer', color: 'var(--text-primary)', fontSize: '14px', background: 'var(--bg-hover)' }}>
-                                    <Icons.MessageSquare />
-                                    <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{messages[0]?.content}</span>
-                                </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                        <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'linear-gradient(135deg, var(--primary), #8b5cf6)', display: 'flex', alignItems: 'center', justifyItems: 'center', justifyContent: 'center', color: 'white', flexShrink: 0 }}>
+                            <Icons.Shield />
+                        </div>
+                        {!sidebarCollapsed && (
+                            <motion.h1 
+                                initial={{ opacity: 0 }} 
+                                animate={{ opacity: 1 }}
+                                style={{ fontSize: '18px', fontWeight: '800', color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.02em' }}
+                            >
+                                {t('appTitle')}
+                            </motion.h1>
+                        )}
+                    </div>
+                    <button onClick={startNewChat} style={{
+                        display: 'flex', alignItems: 'center', justifyContent: sidebarCollapsed ? 'center' : 'flex-start', gap: '12px', padding: '12px', borderRadius: '14px',
+                        background: 'var(--bg-hover)', border: '1px solid var(--border-color)', color: 'var(--text-primary)',
+                        cursor: 'pointer', fontWeight: '600', fontSize: '14px', transition: 'all 0.3s ease', marginBottom: '24px',
+                        boxShadow: 'var(--shadow-bubble)', width: '100%', whiteSpace: 'nowrap', overflow: 'hidden'
+                    }} onMouseOver={e => e.currentTarget.style.borderColor = 'var(--primary)'} onMouseOut={e => e.currentTarget.style.borderColor = 'var(--border-color)'}>
+                        <Icons.Plus style={{ flexShrink: 0 }} />
+                        {!sidebarCollapsed && <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }}>New Chat</motion.span>}
+                    </button>
+
+                    <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {!sidebarCollapsed && (
+                            <motion.p 
+                                initial={{ opacity: 0 }} 
+                                animate={{ opacity: 1 }}
+                                style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}
+                            >
+                                Recent Chats
+                            </motion.p>
+                        )}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', overflowY: 'auto', paddingRight: '4px' }}>
+                            {sessions.length > 0 ? (
+                                sessions.map(session => (
+                                    <div 
+                                        key={session.id} 
+                                        onClick={() => setCurrentSessionId(session.id)}
+                                        style={{ 
+                                            display: 'flex', 
+                                            alignItems: 'center', 
+                                            justifyContent: sidebarCollapsed ? 'center' : 'space-between',
+                                            gap: '8px', 
+                                            padding: '10px 12px', 
+                                            borderRadius: '12px', 
+                                            cursor: 'pointer', 
+                                            color: currentSessionId === session.id ? 'var(--primary)' : 'var(--text-primary)', 
+                                            fontSize: '14px', 
+                                            background: currentSessionId === session.id ? 'var(--bg-hover)' : 'transparent',
+                                            border: currentSessionId === session.id ? '1px solid var(--border-color)' : '1px solid transparent',
+                                            transition: 'all 0.3s ease',
+                                            position: 'relative',
+                                            overflow: 'hidden'
+                                        }}
+                                        onMouseEnter={(e) => { 
+                                            const btn = e.currentTarget.querySelector('.delete-session-btn');
+                                            if (btn) btn.style.opacity = '1'; 
+                                        }}
+                                        onMouseLeave={(e) => { 
+                                            const btn = e.currentTarget.querySelector('.delete-session-btn');
+                                            if (btn) btn.style.opacity = '0'; 
+                                        }}
+                                    >
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: sidebarCollapsed ? '100%' : '82%', overflow: 'hidden', justifyContent: sidebarCollapsed ? 'center' : 'flex-start' }}>
+                                            <div style={{ flexShrink: 0 }}><Icons.MessageSquare /></div>
+                                            {!sidebarCollapsed && (
+                                                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: currentSessionId === session.id ? '600' : '500' }}>
+                                                    {session.title}
+                                                </span>
+                                            )}
+                                        </div>
+                                        {!sidebarCollapsed && (
+                                            <button 
+                                                className="delete-session-btn"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    deleteSession(session.id);
+                                                }}
+                                                style={{
+                                                    background: 'transparent',
+                                                    border: 'none',
+                                                    color: 'var(--text-secondary)',
+                                                    cursor: 'pointer',
+                                                    padding: '4px',
+                                                    borderRadius: '6px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    opacity: 0,
+                                                    transition: 'opacity 0.2s, color 0.2s'
+                                                }}
+                                                onMouseOver={e => e.currentTarget.style.color = '#ef4444'}
+                                                onMouseOut={e => e.currentTarget.style.color = 'var(--text-secondary)'}
+                                                title="Delete chat"
+                                            >
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                                            </button>
+                                        )}
+                                    </div>
+                                ))
                             ) : (
-                                <p style={{ fontSize: '13px', color: 'var(--text-secondary)', fontStyle: 'italic' }}>No recent chats</p>
+                                !sidebarCollapsed && (
+                                    <p style={{ fontSize: '13px', color: 'var(--text-secondary)', fontStyle: 'italic', paddingLeft: '8px' }}>No recent chats</p>
+                                )
                             )}
                         </div>
                     </div>
-
-
-                </div>
+                </motion.div>
 
                 <div className="main-chat-area">
                     <header style={{
                         padding: '16px 32px', display: 'flex', justifyContent: 'flex-end', alignItems: 'center',
                         zIndex: 10, background: 'transparent'
                     }}>
+                        {/* Connected Status badge */}
+                        <div className="status-badge">
+                            <span className="status-dot"></span>
+                            <span>Connected</span>
+                        </div>
+
+                        <motion.div 
+                            initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.2 }}
+                            style={{ display: 'flex', gap: '10px', alignItems: 'center' }}
+                        >
+                            {/* Custom language selector dropdown */}
+                            <div className="lang-select-container">
+                                <button className="lang-dropdown-btn" onClick={() => setLangOpen(!langOpen)}>
+                                    <Icons.Globe />
+                                    <span>{language === 'hi' ? 'हिंदी' : 'English'}</span>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: langOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s ease' }}><path d="m6 9 6 6 6-6"/></svg>
+                                </button>
+                                <AnimatePresence>
+                                    {langOpen && (
+                                        <motion.div 
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: 10 }}
+                                            className="lang-dropdown-menu"
+                                        >
+                                            <button className="lang-dropdown-item" onClick={() => { setLanguage('en'); setLangOpen(false); }}>English</button>
+                                            <button className="lang-dropdown-item" onClick={() => { setLanguage('hi'); setLangOpen(false); }}>हिंदी</button>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+
+                            <button className={`btn-icon ${voiceEnabled ? 'active' : ''}`} onClick={handleVoiceToggle} title={voiceEnabled ? "Mute Voice" : "Enable Voice"}>
+                                {voiceEnabled ? <Icons.Volume /> : <Icons.VolumeX />}
+                            </button>
+                            <button className="btn-icon" onClick={() => setDarkMode(!darkMode)} title="Toggle Theme">
+                                {darkMode ? <Icons.Moon /> : <Icons.Sun />}
+                            </button>
+                            <button className="btn-icon" onClick={clearCurrentChat} title="Clear Chat">
+                                <Icons.Trash />
+                            </button>
+                        </motion.div>
+                    </header>
+
+                    <div ref={chatBoxRef} style={{ flex: 1, overflowY: 'auto', padding: '32px 28px', scrollBehavior: 'smooth' }}>
+                        {messages.length === 0 ? (
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3, duration: 0.5 }}
+                                style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', maxWidth: '640px', margin: '0 auto' }}
+                            >
+                                <motion.div 
+                                    animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                                    style={{ marginBottom: '24px', color: 'var(--primary)', width: '68px', height: '68px', background: 'var(--bg-bubble-bot)', borderRadius: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-bubble)', border: '1px solid var(--border-color)' }}
+                                >
+                                    <Icons.Shield />
+                                </motion.div>
+                                <h2 style={{ fontSize: '28px', fontWeight: '800', marginBottom: '12px', color: 'var(--text-primary)', textAlign: 'center' }}>{t('welcomeTitle')}</h2>
+                                <p style={{ fontSize: '16px', color: 'var(--text-secondary)', textAlign: 'center', marginBottom: '48px', lineHeight: '1.6', maxWidth: '85%' }}>{t('welcomeSubtitle')}</p>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', width: '100%' }}>
+                                    {schemeSuggestions.map((s, idx) => (
+                                        <motion.button 
+                                            key={s.id} 
+                                            onMouseEnter={() => setActiveBgImage(s.bgImage)}
+                                            onMouseLeave={() => setActiveBgImage(null)}
+                                            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 + (idx * 0.1) }}
+                                            whileHover={{ 
+                                                scale: 1.03, 
+                                                y: -6, 
+                                                boxShadow: darkMode 
+                                                    ? '0 15px 30px rgba(99, 102, 241, 0.2), 0 10px 15px rgba(99, 102, 241, 0.15)'
+                                                    : '0 15px 30px rgba(79, 70, 229, 0.1), 0 10px 15px rgba(79, 70, 229, 0.08)',
+                                                borderColor: 'var(--primary)'
+                                            }}
+                                            whileTap={{ scale: 0.98 }}
+                                            onClick={() => { setInputValue(s.query); setTimeout(sendMessage, 100); }}
+                                            style={{
+                                                padding: '20px', borderRadius: '16px', border: '1px solid var(--border-color)',
+                                                background: 'var(--bg-app)', display: 'flex', alignItems: 'flex-start', gap: '16px',
+                                                cursor: 'pointer', textAlign: 'left', transition: 'all 0.3s ease', color: 'var(--text-primary)',
+                                                boxShadow: 'var(--shadow-bubble)',
+                                                backdropFilter: 'blur(16px)'
+                                            }}
+                                        >
+                                            <div style={{ color: 'var(--primary)', background: 'var(--bg-hover)', padding: '10px', borderRadius: '10px' }}>{s.icon}</div>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                                <span style={{ fontSize: '15px', fontWeight: '700' }}>{s.title}</span>
+                                                <span style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>{s.query}</span>
+                                            </div>
+                                        </motion.button>
+                                    ))}
+                                </div>
+                            </motion.div>
+                        ) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '850px', margin: '0 auto' }}>
+                                <AnimatePresence>
+                                    {messages.map((msg, idx) => {
+                                        const isLastMessage = idx === messages.length - 1;
+                                        const showFollowUps = isLastMessage && !msg.isUser && !isTyping && msg.content;
+                                        
+                                        const getFollowUpChips = () => {
+                                            if (language === 'hi') {
+                                                return [
+                                                    "पात्रता मानदंड क्या हैं?",
+                                                    "आवेदन कैसे करें?",
+                                                    "किन दस्तावेजों की आवश्यकता है?",
+                                                    "मुख्य लाभ क्या हैं?"
+                                                ];
+                                            } else {
+                                                return [
+                                                    "What are the eligibility criteria?",
+                                                    "How do I apply?",
+                                                    "What documents are required?",
+                                                    "What are the key benefits?"
+                                                ];
+                                            }
+                                        };
+
+                                        return (
+                                            <div key={msg.id} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                                <motion.div
+                                                    initial={{ opacity: 0, y: 20, scale: 0.95 }} 
+                                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                    transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                                                    style={{ display: 'flex', gap: '16px', flexDirection: msg.isUser ? 'row-reverse' : 'row' }}
+                                                >
+                                                    <div style={{
+                                                        width: '36px', height: '36px', borderRadius: '12px', flexShrink: 0,
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                        background: msg.isUser ? 'linear-gradient(135deg, var(--primary), #8b5cf6)' : 'var(--bg-bubble-bot)',
+                                                        color: msg.isUser ? '#fff' : 'var(--primary)',
+                                                        border: msg.isUser ? 'none' : '1px solid var(--border-color)',
+                                                        boxShadow: 'var(--shadow-bubble)'
+                                                    }}>
+                                                        {msg.isUser ? <Icons.User /> : <Icons.Bot />}
+                                                    </div>
+                                                    <div className="message-bubble" style={{
+                                                        padding: '16px 20px', borderRadius: '20px', maxWidth: '75%',
+                                                        fontSize: '15px', lineHeight: '1.6',
+                                                        background: msg.isUser ? 'var(--bg-bubble-user)' : 'var(--bg-bubble-bot)',
+                                                        color: msg.isUser ? 'var(--text-bubble-user)' : 'var(--text-bubble-bot)',
+                                                        border: msg.isUser ? 'none' : '1px solid var(--border-color)',
+                                                        borderTopRightRadius: msg.isUser ? '4px' : '20px',
+                                                        borderTopLeftRadius: msg.isUser ? '20px' : '4px',
+                                                        display: 'flex', flexDirection: 'column'
+                                                    }}>
+                                                        {/* Document badge overlay inside bubble if user sent one */}
+                                                        {msg.isUser && msg.hasAttachment && (
+                                                            <div style={{ 
+                                                                display: 'flex', 
+                                                                alignItems: 'center', 
+                                                                gap: '8px', 
+                                                                padding: '8px 12px', 
+                                                                background: 'rgba(255, 255, 255, 0.18)', 
+                                                                borderRadius: '10px', 
+                                                                marginBottom: '10px',
+                                                                fontSize: '13px',
+                                                                fontWeight: '600',
+                                                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                                                color: '#ffffff'
+                                                            }}>
+                                                                <Icons.FileText />
+                                                                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                                    {msg.attachmentName || (language === 'hi' ? 'दस्तावेज़' : 'Document')}
+                                                                </span>
+                                                            </div>
+                                                        )}
+
+                                                        <div style={{ flex: 1, whiteSpace: msg.isUser ? 'pre-wrap' : 'normal' }}>
+                                                            {!msg.isUser ? (
+                                                                <div 
+                                                                    className="markdown-content"
+                                                                    dangerouslySetInnerHTML={{ __html: typeof marked !== 'undefined' ? marked.parse(msg.content) : msg.content }}
+                                                                />
+                                                            ) : (
+                                                                msg.content
+                                                            )}
+                                                        </div>
+                                                        {!msg.isUser && msg.content && (
+                                                            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px', borderTop: '1px solid var(--border-color)', paddingTop: '8px' }}>
+                                                                <button 
+                                                                    onClick={() => speakText(msg.content, msg.id)}
+                                                                    style={{
+                                                                        border: 'none', background: 'transparent', cursor: 'pointer',
+                                                                        color: speakingMessageId === msg.id ? 'var(--primary)' : 'var(--text-secondary)',
+                                                                        display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: '600',
+                                                                        transition: 'color 0.2s'
+                                                                    }}
+                                                                    title={speakingMessageId === msg.id ? "Stop reading" : "Read aloud"}
+                                                                >
+                                                                    {speakingMessageId === msg.id ? <Icons.VolumeX /> : <Icons.Volume />}
+                                                                    <span>{speakingMessageId === msg.id ? (language === 'hi' ? "रोकें" : "Stop") : (language === 'hi' ? "सुनें" : "Listen")}</span>
+                                                                    {speakingMessageId === msg.id && (
+                                                                        <div className="tts-wave">
+                                                                            <span className="tts-bar"></span>
+                                                                            <span className="tts-bar"></span>
+                                                                            <span className="tts-bar"></span>
+                                                                        </div>
+                                                                    )}
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </motion.div>
+                                                
+                                                {showFollowUps && (
+                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '4px', paddingLeft: '52px', paddingRight: '52px' }}>
+                                                        {getFollowUpChips().map((chipText, cIdx) => (
+                                                            <motion.button
+                                                                key={cIdx}
+                                                                whileHover={{ scale: 1.03, borderColor: 'var(--primary)' }}
+                                                                whileTap={{ scale: 0.97 }}
+                                                                onClick={() => sendMessage(chipText)}
+                                                                style={{
+                                                                    padding: '8px 14px', borderRadius: '18px', border: '1px solid var(--border-color)',
+                                                                    background: 'var(--bg-app)', color: 'var(--text-primary)', fontSize: '13px',
+                                                                    fontWeight: '500', cursor: 'pointer', boxShadow: 'var(--shadow-bubble)',
+                                                                    transition: 'border-color 0.2s, background-color 0.2s'
+                                                                }}
+                                                            >
+                                                                {chipText}
+                                                            </motion.button>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                    {isTyping && (
+                                        <motion.div 
+                                            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} 
+                                            exit={{ opacity: 0, scale: 0.9 }}
+                                            style={{ display: 'flex', gap: '16px' }}
+                                        >
+                                            <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: 'var(--bg-bubble-bot)', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', boxShadow: 'var(--shadow-bubble)' }}><Icons.Bot /></div>
+                                            <div className="message-bubble" style={{ padding: '18px 20px', borderRadius: '20px', borderTopLeftRadius: '4px', background: 'var(--bg-bubble-bot)', border: '1px solid var(--border-color)', display: 'flex', gap: '6px', alignItems: 'center' }}>
+                                                <div className="typing-wave">
+                                                    <span className="typing-bar"></span>
+                                                    <span className="typing-bar"></span>
+                                                    <span className="typing-bar"></span>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                        )}
+                    </div>
 
                     <motion.div 
-                        initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.2 }}
-                        style={{ display: 'flex', gap: '8px', alignItems: 'center' }}
+                        initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5 }}
+                        style={{ padding: '20px 32px 28px', background: 'transparent', zIndex: 10 }}
                     >
-                        <div style={{
-                            display: 'flex', alignItems: 'center', gap: '6px',
-                            padding: '8px 14px', borderRadius: '20px',
-                            border: '1px solid var(--border-color)', background: 'var(--bg-app)',
-                            boxShadow: 'var(--shadow-bubble)'
-                        }}>
-                            <span style={{ color: 'var(--text-secondary)' }}><Icons.Globe /></span>
-                            <select
-                                value={language} onChange={(e) => setLanguage(e.target.value)}
-                                style={{ border: 'none', background: 'transparent', fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)', cursor: 'pointer' }}
-                            >
-                                <option value="en">English</option>
-                                <option value="hi">हिंदी</option>
-                            </select>
-                        </div>
-
-                        <button className={`btn-icon ${voiceEnabled ? 'active' : ''}`} onClick={handleVoiceToggle} title={voiceEnabled ? "Mute Voice" : "Enable Voice"}>
-                            {voiceEnabled ? <Icons.Volume /> : <Icons.VolumeX />}
-                        </button>
-                        <button className="btn-icon" onClick={() => setDarkMode(!darkMode)} title="Toggle Theme">
-                            {darkMode ? <Icons.Moon /> : <Icons.Sun />}
-                        </button>
-                        <button className="btn-icon" onClick={() => setMessages([])} title="Clear Chat">
-                            <Icons.Trash />
-                        </button>
-                    </motion.div>
-                </header>
-
-                <div ref={chatBoxRef} style={{ flex: 1, overflowY: 'auto', padding: '32px 28px', scrollBehavior: 'smooth' }}>
-                    {messages.length === 0 ? (
-                        <motion.div 
-                            initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3, duration: 0.5 }}
-                            style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', maxWidth: '640px', margin: '0 auto' }}
-                        >
+                        {/* Custom Attached File Preview Capsule */}
+                        {attachedFile && (
                             <motion.div 
-                                animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-                                style={{ marginBottom: '24px', color: 'var(--primary)', width: '64px', height: '64px', background: 'var(--bg-app)', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-bubble)' }}
+                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                className="doc-preview-capsule"
+                                style={{ margin: '0 auto 12px' }}
                             >
-                                <Icons.Shield />
+                                <div className="doc-preview-thumb">
+                                    {attachedFile.preview ? (
+                                        <img src={attachedFile.preview} className="doc-preview-thumb" style={{ border: 'none', margin: 0 }} />
+                                    ) : (
+                                        <Icons.FileText />
+                                    )}
+                                </div>
+                                <div className="doc-preview-info">
+                                    <span className="doc-preview-name">{attachedFile.name}</span>
+                                    <span className="doc-preview-status">
+                                        {ocrLoading ? (
+                                            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                <span className="typing-bar" style={{ width: '2px', height: '8px', animationDuration: '0.8s' }}></span>
+                                                <span>{attachedFile.status}</span>
+                                            </span>
+                                        ) : (
+                                            attachedFile.status
+                                        )}
+                                    </span>
+                                </div>
+                                <button className="doc-preview-close" onClick={removeAttachment} title="Remove document">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                                </button>
                             </motion.div>
-                            <h2 style={{ fontSize: '28px', fontWeight: '700', marginBottom: '12px', color: 'var(--text-primary)', textAlign: 'center' }}>{t('welcomeTitle')}</h2>
-                            <p style={{ fontSize: '16px', color: 'var(--text-secondary)', textAlign: 'center', marginBottom: '48px', lineHeight: '1.6', maxWidth: '80%' }}>{t('welcomeSubtitle')}</p>
+                        )}
 
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', width: '100%' }}>
-                                {schemeSuggestions.map((s, idx) => (
-                                    <motion.button 
-                                        key={s.id} 
-                                        onMouseEnter={() => setActiveBgImage(s.bgImage)}
-                                        onMouseLeave={() => setActiveBgImage(null)}
-                                        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 + (idx * 0.1) }}
-                                        whileHover={{ scale: 1.02, y: -4, boxShadow: '0 10px 25px -5px rgba(37, 99, 235, 0.1), 0 8px 10px -6px rgba(37, 99, 235, 0.1)', borderColor: 'var(--primary)' }}
-                                        whileTap={{ scale: 0.98 }}
-                                        onClick={() => { setInputValue(s.query); setTimeout(sendMessage, 100); }}
-                                        style={{
-                                            padding: '20px', borderRadius: '16px', border: '1px solid var(--border-color)',
-                                            background: 'var(--bg-app)', display: 'flex', alignItems: 'flex-start', gap: '16px',
-                                            cursor: 'pointer', textAlign: 'left', transition: 'border-color 0.2s', color: 'var(--text-primary)',
-                                            boxShadow: 'var(--shadow-bubble)'
-                                        }}
-                                    >
-                                        <div style={{ color: 'var(--primary)', background: 'var(--bg-hover)', padding: '10px', borderRadius: '10px' }}>{s.icon}</div>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                            <span style={{ fontSize: '15px', fontWeight: '600' }}>{s.title}</span>
-                                            <span style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>{s.query}</span>
-                                        </div>
-                                    </motion.button>
-                                ))}
-                            </div>
-                        </motion.div>
-                    ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '850px', margin: '0 auto' }}>
-                            <AnimatePresence>
-                                {messages.map(msg => (
-                                    <motion.div key={msg.id}
-                                                initial={{ opacity: 0, y: 20, scale: 0.95 }} 
-                                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                                                style={{ display: 'flex', gap: '16px', flexDirection: msg.isUser ? 'row-reverse' : 'row' }}
-                                    >
-                                        <div style={{
-                                            width: '36px', height: '36px', borderRadius: '12px', flexShrink: 0,
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            background: msg.isUser ? 'linear-gradient(135deg, var(--primary), #8b5cf6)' : 'var(--bg-app)',
-                                            color: msg.isUser ? '#fff' : 'var(--primary)',
-                                            border: msg.isUser ? 'none' : '1px solid var(--border-color)',
-                                            boxShadow: 'var(--shadow-bubble)'
-                                        }}>
-                                            {msg.isUser ? <Icons.User /> : <Icons.Bot />}
-                                        </div>
-                                        <div className="message-bubble" style={{
-                                            padding: '16px 20px', borderRadius: '20px', maxWidth: '75%',
-                                            fontSize: '15px', lineHeight: '1.6', whiteSpace: 'pre-wrap',
-                                            background: msg.isUser ? 'var(--bg-bubble-user)' : 'var(--bg-bubble-bot)',
-                                            color: msg.isUser ? 'var(--text-bubble-user)' : 'var(--text-bubble-bot)',
-                                            border: msg.isUser ? 'none' : '1px solid var(--border-color)',
-                                            borderTopRightRadius: msg.isUser ? '4px' : '20px',
-                                            borderTopLeftRadius: msg.isUser ? '20px' : '4px'
-                                        }}>
-                                            {msg.content}
-                                        </div>
-                                    </motion.div>
-                                ))}
-                                {isTyping && (
-                                    <motion.div 
-                                        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} 
-                                        exit={{ opacity: 0, scale: 0.9 }}
-                                        style={{ display: 'flex', gap: '16px' }}
-                                    >
-                                        <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: 'var(--bg-app)', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', boxShadow: 'var(--shadow-bubble)' }}><Icons.Bot /></div>
-                                        <div className="message-bubble" style={{ padding: '18px 20px', borderRadius: '20px', borderTopLeftRadius: '4px', background: 'var(--bg-bubble-bot)', border: '1px solid var(--border-color)', display: 'flex', gap: '6px', alignItems: 'center' }}>
-                                            <span className="typing-dot"></span>
-                                            <span className="typing-dot"></span>
-                                            <span className="typing-dot"></span>
-                                        </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </div>
-                    )}
-                </div>
-
-                <motion.div 
-                    initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5 }}
-                    style={{ padding: '24px 32px 32px', background: 'transparent', zIndex: 10 }}
-                >
-                    <div className="chat-input-wrapper" style={{
-                        display: 'flex', alignItems: 'center', gap: '12px', background: 'var(--bg-input)', backdropFilter: 'blur(12px)',
-                        padding: '12px 16px', borderRadius: '24px', maxWidth: '850px', margin: '0 auto'
-                    }}>
-                        <button className="btn-icon" onClick={() => fileInputRef.current?.click()} style={{ borderRadius: '16px' }} title="Attach Document">
-                            <Icons.Paperclip />
-                        </button>
-                        <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileUpload} accept="image/*,application/pdf" />
-
-                        <input
-                            value={inputValue} onChange={e => setInputValue(e.target.value)}
-                            onKeyPress={e => e.key === 'Enter' && sendMessage()}
-                            placeholder={t('placeholder')}
-                            style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '16px', color: 'var(--text-primary)', padding: '0 8px' }}
-                        />
-
-                        <button className={`btn-icon ${isListening ? 'active' : ''}`} onClick={handleVoice} style={{ borderRadius: '16px', color: isListening ? 'var(--danger)' : '' }} title="Voice Input">
-                            <Icons.Mic />
-                        </button>
-
-                        <motion.button 
-                            whileHover={{ scale: inputValue.trim() ? 1.05 : 1 }}
-                            whileTap={{ scale: inputValue.trim() ? 0.95 : 1 }}
-                            onClick={sendMessage} disabled={!inputValue.trim()} style={{
-                            width: '44px', height: '44px', borderRadius: '18px', border: 'none',
-                            background: inputValue.trim() ? 'linear-gradient(135deg, var(--primary), #8b5cf6)' : 'var(--border-color)',
-                            color: inputValue.trim() ? '#ffffff' : 'var(--text-secondary)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: inputValue.trim() ? 'pointer' : 'default',
-                            transition: 'all 0.3s ease',
-                            boxShadow: inputValue.trim() ? '0 4px 12px rgba(37, 99, 235, 0.3)' : 'none'
+                        <div className="chat-input-wrapper" style={{
+                            display: 'flex', alignItems: 'center', gap: '12px', background: 'var(--bg-input)', backdropFilter: 'blur(12px)',
+                            padding: '12px 16px', borderRadius: '24px', maxWidth: '850px', margin: '0 auto'
                         }}>
-                            <Icons.Send />
-                        </motion.button>
-                    </div>
-                    <div style={{ textAlign: 'center', marginTop: '16px', fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '500' }}>
-                        Yojana-Setu is an AI assistant and can make mistakes. Consider verifying important information.
-                    </div>
-                </motion.div>
+                            <button className="btn-icon" onClick={() => fileInputRef.current?.click()} style={{ borderRadius: '16px' }} title="Attach Document">
+                                <Icons.Paperclip />
+                            </button>
+                            <input type="file" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileUpload} accept="image/*" />
+
+                            {/* Voice Recording indicator overlay inside the input bar */}
+                            {isListening ? (
+                                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 8px' }}>
+                                    <span style={{ fontSize: '15px', color: 'var(--text-secondary)', fontWeight: '600' }}>
+                                        {language === 'hi' ? 'सुन रहा हूँ...' : 'Listening...'}
+                                    </span>
+                                    <div className="listening-wave-container">
+                                        <span className="listening-bar"></span>
+                                        <span className="listening-bar"></span>
+                                        <span className="listening-bar"></span>
+                                        <span className="listening-bar"></span>
+                                        <span className="listening-bar"></span>
+                                    </div>
+                                </div>
+                            ) : (
+                                <input
+                                    value={inputValue} onChange={e => setInputValue(e.target.value)}
+                                    onKeyPress={e => e.key === 'Enter' && sendMessage()}
+                                    placeholder={t('placeholder')}
+                                    style={{ flex: 1, border: 'none', background: 'transparent', fontSize: '16px', color: 'var(--text-primary)', padding: '0 8px' }}
+                                />
+                            )}
+
+                            <button className={`btn-icon ${isListening ? 'active' : ''}`} onClick={handleVoice} style={{ borderRadius: '16px' }} title="Voice Input">
+                                <Icons.Mic />
+                            </button>
+
+                            <motion.button 
+                                whileHover={{ scale: (inputValue.trim() || extractedText) ? 1.05 : 1 }}
+                                whileTap={{ scale: (inputValue.trim() || extractedText) ? 0.95 : 1 }}
+                                onClick={() => sendMessage()} disabled={!inputValue.trim() && !extractedText} style={{
+                                width: '44px', height: '44px', borderRadius: '18px', border: 'none',
+                                background: (inputValue.trim() || extractedText) ? 'linear-gradient(135deg, var(--primary), #8b5cf6)' : 'var(--border-color)',
+                                color: (inputValue.trim() || extractedText) ? '#ffffff' : 'var(--text-secondary)',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: (inputValue.trim() || extractedText) ? 'pointer' : 'default',
+                                transition: 'all 0.3s ease',
+                                boxShadow: (inputValue.trim() || extractedText) ? '0 4px 12px rgba(79, 70, 229, 0.35)' : 'none'
+                            }}>
+                                <Icons.Send />
+                            </motion.button>
+                        </div>
+                        <div style={{ textAlign: 'center', marginTop: '16px', fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '600' }}>
+                            Yojana-Setu is an AI assistant and can make mistakes. Consider verifying important information.
+                        </div>
+                    </motion.div>
                 </div>
             </motion.div>
             </>

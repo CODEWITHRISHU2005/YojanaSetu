@@ -3,10 +3,7 @@ package com.CodeWithRishu.YojanaSetu.service;
 import com.CodeWithRishu.YojanaSetu.utils.Helper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
-import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.reader.pdf.PagePdfDocumentReader;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
@@ -34,13 +31,9 @@ public class ChatService {
     private final ChatClient chatClient;
 
     public ChatService(ChatClient.Builder chatClientBuilder, VectorStore vectorStore) {
-        ChatMemory chatMemory = MessageWindowChatMemory.builder()
-                .maxMessages(5).build();
-
         this.vectorStore = vectorStore;
         this.chatClient = chatClientBuilder
                 .defaultAdvisors(
-                        PromptChatMemoryAdvisor.builder(chatMemory).build(),
                         QuestionAnswerAdvisor.builder(vectorStore).build()
                 )
                 .build();
@@ -133,4 +126,5 @@ public class ChatService {
             log.error("Failed to load PDF: {}", resource.getFilename(), e);
         }
     }
+
 }

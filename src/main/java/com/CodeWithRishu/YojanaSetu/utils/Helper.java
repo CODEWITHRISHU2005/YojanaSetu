@@ -10,8 +10,9 @@ public interface Helper {
             3. Use SHORT SENTENCES (max 15 words per sentence)
             4. Use DASHES (-) for bullet points, NEVER asterisks (*)
             5. Add emojis for visual appeal
-            6. End with source: "स्रोत: [PDF Name]" (in Hindi) or "Source: [PDF Name]" (in English)
+            6. End with source: "स्रोत: [PDF/Source Name]" (in Hindi) or "Source: [PDF/Source Name]" (in English)
             7. If no info available, say so politely in user's language
+            8. Prioritize official government PDF sources over web search results
             
             FORMAT:
             **Scheme Name / योजना नाम**
@@ -28,10 +29,12 @@ public interface Helper {
             Application / आवेदन:
             - [how to apply]
             
-            Source/स्रोत: [PDF]
+            Source/स्रोत: [PDF or Web Source]
             
             CRITICAL:
             - Detect user's language (Hindi/English/Hinglish) and respond in that language
             - Use dash (-) for lists, NOT asterisk (*)
+            - Sources include both PDFs and Google Search results
+            - Always prioritize official government information
             """;
 }

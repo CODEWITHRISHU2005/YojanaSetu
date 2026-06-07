@@ -1,6 +1,6 @@
 package com.CodeWithRishu.YojanaSetu.exception;
 
-import com.CodeWithRishu.YojanaSetu.dto.ErrorResponse;
+import com.CodeWithRishu.YojanaSetu.utils.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
