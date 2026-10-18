@@ -13,7 +13,6 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://unpkg.com/framer-motion@10/dist/framer-motion.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js'></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
             --bg-body: radial-gradient(circle at 0% 0%, #f8fafc, #f1f5f9, #e2e8f0);
@@ -518,6 +517,251 @@
             background: rgba(239, 68, 68, 0.12);
             color: #ef4444;
         }
+
+        /* Calm, responsive application shell */
+        :root {
+            --bg-body: #f3f5f8;
+            --bg-app: #ffffff;
+            --bg-sidebar: #f8fafc;
+            --bg-input: #ffffff;
+            --bg-bubble-bot: #f5f7fa;
+            --bg-bubble-user: #315fc5;
+            --bg-hover: #edf3ff;
+            --text-primary: #172033;
+            --text-secondary: #647084;
+            --text-bubble-bot: #172033;
+            --text-bubble-user: #ffffff;
+            --border-color: #e2e7ef;
+            --primary: #315fc5;
+            --primary-glow: rgba(49, 95, 197, 0.14);
+            --shadow-app: 0 18px 60px rgba(25, 39, 66, 0.1);
+            --shadow-bubble: 0 2px 8px rgba(25, 39, 66, 0.04);
+            --font-head: 'Inter', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+        body.dark {
+            --bg-body: #10151d;
+            --bg-app: #171e29;
+            --bg-sidebar: #131a24;
+            --bg-input: #1d2633;
+            --bg-bubble-bot: #202a38;
+            --bg-bubble-user: #416fce;
+            --bg-hover: #202f48;
+            --text-primary: #edf2fa;
+            --text-secondary: #9ba8bb;
+            --text-bubble-bot: #edf2fa;
+            --text-bubble-user: #ffffff;
+            --border-color: #2b3645;
+            --primary: #8aabf4;
+            --primary-glow: rgba(101, 145, 230, 0.2);
+            --shadow-app: 0 18px 60px rgba(0, 0, 0, 0.28);
+            --shadow-bubble: 0 2px 8px rgba(0, 0, 0, 0.12);
+        }
+        body {
+            background: var(--bg-body);
+            color: var(--text-primary);
+            min-height: 100vh;
+            min-height: 100dvh;
+            height: auto;
+            overflow: hidden;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        #root {
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            min-height: 0;
+            padding: 18px;
+        }
+        .ambient-bg { display: none !important; }
+        #root .app-container {
+            width: min(100%, 1320px) !important;
+            height: min(100%, 900px) !important;
+            max-height: 100%;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 20px;
+            overflow: hidden;
+            background: var(--bg-app);
+            box-shadow: var(--shadow-app);
+        }
+        #root .sidebar {
+            flex-shrink: 0;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            box-shadow: none;
+            padding: 22px 16px;
+            backdrop-filter: none;
+        }
+        #root .main-chat-area,
+        body.dark #root .main-chat-area {
+            min-width: 0;
+            background: var(--bg-app);
+            backdrop-filter: none;
+        }
+        #root .main-chat-area > header {
+            min-height: 68px;
+            padding: 12px 24px !important;
+            background: var(--bg-app) !important;
+            border-bottom: 1px solid var(--border-color);
+        }
+        #root .status-badge {
+            margin-right: auto;
+            padding: 6px 10px;
+            color: var(--text-secondary);
+            background: var(--bg-sidebar);
+            border: 1px solid var(--border-color);
+            backdrop-filter: none;
+        }
+        #root .status-dot { background: #35a477; animation: none; }
+        #root .btn-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 11px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-app);
+            transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+        }
+        #root .btn-icon:hover,
+        #root .lang-dropdown-btn:hover {
+            transform: none;
+            box-shadow: none;
+            background: var(--bg-hover);
+            border-color: var(--primary);
+        }
+        #root .lang-dropdown-btn {
+            min-height: 40px;
+            border-radius: 11px;
+            background: var(--bg-app);
+            backdrop-filter: none;
+        }
+        #root .chat-input-wrapper {
+            max-width: 800px !important;
+            border-radius: 16px !important;
+            border: 1px solid var(--border-color) !important;
+            box-shadow: 0 5px 18px rgba(25, 39, 66, 0.06) !important;
+            background: var(--bg-input) !important;
+            backdrop-filter: none;
+            transform: none !important;
+        }
+        #root .chat-input-wrapper:focus-within {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px var(--primary-glow) !important;
+        }
+        #root .chat-input-wrapper input {
+            min-width: 0;
+            min-height: 42px;
+            color: var(--text-primary) !important;
+        }
+        #root .chat-input-wrapper input::placeholder { color: var(--text-secondary); }
+        #root .message-bubble {
+            max-width: min(78%, 760px) !important;
+            padding: 15px 18px !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 16px !important;
+            box-shadow: none;
+            font-size: 15px !important;
+            line-height: 1.7 !important;
+        }
+        #root .message-bubble[style*="--bg-bubble-user"] {
+            border-color: transparent !important;
+        }
+        #root .welcome-screen {
+            width: min(100%, 680px);
+            padding: 28px 20px;
+        }
+        #root .welcome-screen button {
+            min-height: 92px;
+            border-radius: 14px !important;
+            background: var(--bg-app) !important;
+            border: 1px solid var(--border-color) !important;
+            box-shadow: none !important;
+            backdrop-filter: none !important;
+            transition: border-color 0.15s ease, background-color 0.15s ease !important;
+        }
+        #root .welcome-screen button:hover {
+            transform: none !important;
+            box-shadow: none !important;
+            background: var(--bg-hover) !important;
+        }
+        #root .doc-preview-capsule {
+            background: var(--bg-sidebar);
+            box-shadow: none;
+            backdrop-filter: none;
+        }
+        #root .mobile-nav-toggle, #root .mobile-nav-backdrop { display: none; }
+        #root button, #root input { font: inherit; }
+        #root button:focus-visible, #root input:focus-visible {
+            outline: 3px solid var(--primary-glow);
+            outline-offset: 2px;
+        }
+        @media (max-width: 760px) {
+            body { overflow: hidden; }
+            #root { padding: 0; }
+            #root .app-container {
+                width: 100% !important;
+                height: 100% !important;
+                max-height: none;
+                border: 0 !important;
+                border-radius: 0;
+                box-shadow: none;
+            }
+            #root .sidebar { display: none !important; }
+            #root .sidebar.sidebar-open {
+                display: flex !important;
+                position: fixed;
+                inset: 0 auto 0 0;
+                z-index: 101;
+                width: min(86vw, 320px) !important;
+                height: 100dvh;
+                transform: translateX(0);
+                box-shadow: 16px 0 40px rgba(15, 23, 42, 0.2);
+            }
+            #root .mobile-nav-toggle { display: flex; }
+            #root .mobile-nav-backdrop {
+                display: block;
+                position: fixed;
+                inset: 0;
+                z-index: 100;
+                width: 100%;
+                height: 100%;
+                border: 0;
+                border-radius: 0;
+                background: rgba(15, 23, 42, 0.38);
+            }
+            #root .main-chat-area > header { min-height: 60px; padding: 10px 14px !important; }
+            #root .main-chat-area > header > div:last-child { gap: 6px !important; }
+            #root .status-badge { padding: 5px 8px; font-size: 11px; }
+            #root .btn-icon { width: 36px; height: 36px; }
+            #root .lang-dropdown-btn { min-height: 36px; padding: 7px 9px; }
+            #root .chat-scroll-area {
+                padding: 18px 14px !important;
+            }
+            #root .welcome-screen { padding: 20px 6px; }
+            #root .welcome-screen h2 { font-size: 24px !important; }
+            #root .welcome-screen p { margin-bottom: 26px !important; font-size: 14px !important; }
+            #root .welcome-screen > div:last-child { gap: 10px !important; }
+            #root .welcome-screen button { min-height: 82px; padding: 13px !important; gap: 10px !important; }
+            #root .message-bubble { max-width: 88% !important; padding: 12px 14px !important; }
+            #root .composer-footer {
+                padding: 12px 12px max(12px, env(safe-area-inset-bottom)) !important;
+            }
+            #root .chat-input-wrapper { gap: 6px !important; padding: 7px !important; }
+            #root .chat-input-wrapper input { font-size: 16px !important; }
+            #root .chat-input-wrapper .btn-icon { width: 36px; height: 36px; }
+        }
+        @media (max-width: 420px) {
+            #root .welcome-screen > div:last-child { grid-template-columns: 1fr !important; }
+            #root .welcome-screen button { min-height: 68px; }
+            #root .status-badge { display: none; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                scroll-behavior: auto !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -525,7 +769,37 @@
 <script type="text/babel">
     const { useState, useEffect, useRef, useCallback } = React;
     const { motion, AnimatePresence } = Motion;
-    const API_BASE_URL = 'http://localhost:8080';
+    const API_BASE_URL = '';
+
+    const readStoredValue = (key) => {
+        try { return window.localStorage.getItem(key); }
+        catch (_) { return null; }
+    };
+
+    const readSavedSessions = () => {
+        try {
+            const sessions = JSON.parse(readStoredValue('yojana_setu_sessions') || '[]');
+            if (!Array.isArray(sessions)) return [];
+            return sessions
+                .filter(session => session && typeof session.id === 'string' && Array.isArray(session.messages))
+                .slice(0, 30)
+                .map(session => ({
+                    id: session.id,
+                    title: typeof session.title === 'string' ? session.title.slice(0, 100) : 'Chat',
+                    timestamp: session.timestamp || null,
+                    messages: session.messages
+                        .filter(message => message && typeof message.content === 'string')
+                        .slice(-100)
+                        .map(message => ({
+                            id: String(message.id || ''),
+                            content: message.content.slice(0, 20_000),
+                            isUser: Boolean(message.isUser),
+                            hasAttachment: Boolean(message.hasAttachment),
+                            attachmentName: typeof message.attachmentName === 'string' ? message.attachmentName.slice(0, 160) : ''
+                        }))
+                }));
+        } catch (_) { return []; }
+    };
 
     const Icons = {
         Bot: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>,
@@ -547,6 +821,7 @@
         Plus: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
         Settings: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>,
         MessageSquare: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
+        Menu: () => <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>,
         ChevronLeft: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>,
         ChevronRight: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>,
         FileText: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
@@ -558,7 +833,12 @@
             appSubtitle: 'Government Scheme Assistant',
             placeholder: 'Ask about any government scheme...',
             welcomeTitle: 'How can I help you today?',
-            welcomeSubtitle: 'Discover eligibility, benefits, and application processes for Indian government schemes effortlessly.',
+            welcomeSubtitle: 'Get clear answers from available scheme guides. Confirm important details with the official source.',
+            chatAvailable: 'Scheme assistant',
+            newChat: 'New chat',
+            recentChats: 'Recent chats',
+            noRecentChats: 'No recent chats',
+            privacyTip: 'Avoid sharing identity or bank details. Chats stay in this browser.',
             uploadSuccess: 'Document attached. Extracting text...',
             uploadError: 'Upload failed. Please ensure the file is valid.',
             ocrSuccess: 'Text extracted from document',
@@ -573,7 +853,12 @@
             appSubtitle: 'सरकारी योजना सहायक',
             placeholder: 'किसी भी सरकारी योजना के बारे में पूछें...',
             welcomeTitle: 'आज मैं आपकी कैसे मदद कर सकता हूँ?',
-            welcomeSubtitle: 'भारतीय सरकारी योजनाओं के लिए पात्रता, लाभ या आवेदन प्रक्रिया के बारे में कुछ भी पूछें।',
+            welcomeSubtitle: 'उपलब्ध योजना गाइड से सरल जानकारी पाएँ। ज़रूरी बातों की पुष्टि आधिकारिक स्रोत से करें।',
+            chatAvailable: 'योजना सहायक',
+            newChat: 'नई चैट',
+            recentChats: 'हाल की चैट',
+            noRecentChats: 'कोई हाल की चैट नहीं',
+            privacyTip: 'पहचान या बैंक की जानकारी साझा न करें। चैट इसी ब्राउज़र में रहती है।',
             uploadSuccess: 'दस्तावेज़ संलग्न। टेक्स्ट निकाला जा रहा है...',
             uploadError: 'अपलोड विफल। कृपया सुनिश्चित करें कि फ़ाइल मान्य है।',
             ocrSuccess: 'दस्तावेज़ से टेक्स्ट निकाला गया',
@@ -586,10 +871,56 @@
     };
 
     const schemeSuggestions = [
-        { id: 1, icon: <Icons.Briefcase />, title: 'PM Kisan Samman Nidhi', query: 'Tell me about PM Kisan Yojana', bgImage: 'assets/pm_kisan_bg.png' },
-        { id: 2, icon: <Icons.Graduation />, title: 'Student Scholarships', query: 'What are the scholarship schemes for students?', bgImage: 'assets/student_scholarship_bg.png' },
-        { id: 3, icon: <Icons.Heart />, title: 'Ayushman Bharat', query: 'How to apply for Ayushman Bharat health card?', bgImage: 'assets/ayushman_bharat_bg.png' },
-        { id: 4, icon: <Icons.Home />, title: 'PM Awas Yojana', query: 'Am I eligible for PM Awas Yojana housing scheme?', bgImage: 'assets/pm_awas_bg.png' }
+        {
+            id: 1, icon: <Icons.Briefcase />,
+            title: { en: 'Farmer pension', hi: 'किसान पेंशन' },
+            description: { en: 'Eligibility, benefits and how to enroll', hi: 'पात्रता, लाभ और नामांकन प्रक्रिया' },
+            query: {
+                en: 'Explain the Pradhan Mantri Kisan Maandhan Yojana: who may qualify, what it provides, and how to apply.',
+                hi: 'प्रधानमंत्री किसान मानधन योजना के बारे में बताइए: कौन पात्र हो सकता है, क्या लाभ मिलता है और आवेदन कैसे करें?'
+            },
+            bgImage: 'assets/pm_kisan_bg.png'
+        },
+        {
+            id: 2, icon: <Icons.Graduation />,
+            title: { en: 'College scholarships', hi: 'कॉलेज छात्रवृत्ति' },
+            description: { en: 'Student eligibility and application steps', hi: 'छात्र पात्रता और आवेदन प्रक्रिया' },
+            query: {
+                en: 'Explain the PM-USP Central Sector Scholarship for college and university students, including eligibility and application steps.',
+                hi: 'कॉलेज और विश्वविद्यालय के छात्रों के लिए PM-USP केंद्रीय छात्रवृत्ति की पात्रता और आवेदन प्रक्रिया बताइए।'
+            },
+            bgImage: 'assets/student_scholarship_bg.png'
+        },
+        {
+            id: 3, icon: <Icons.Heart />,
+            title: { en: 'Health coverage', hi: 'स्वास्थ्य सुरक्षा' },
+            description: { en: 'Coverage, eligibility and where to apply', hi: 'लाभ, पात्रता और आवेदन की जानकारी' },
+            query: {
+                en: 'Explain Ayushman Bharat PM-JAY coverage, eligibility, and where to check the official application process.',
+                hi: 'आयुष्मान भारत PM-JAY के लाभ, पात्रता और आधिकारिक आवेदन प्रक्रिया कहाँ देखें?'
+            },
+            bgImage: 'assets/ayushman_bharat_bg.png'
+        },
+        {
+            id: 4, icon: <Icons.Shield />,
+            title: { en: 'Accident insurance', hi: 'दुर्घटना बीमा' },
+            description: { en: 'Insurance cover and enrollment details', hi: 'बीमा सुरक्षा और नामांकन की जानकारी' },
+            query: {
+                en: 'Explain Pradhan Mantri Suraksha Bima Yojana: coverage, eligibility, and enrollment steps.',
+                hi: 'प्रधानमंत्री सुरक्षा बीमा योजना के लाभ, पात्रता और नामांकन प्रक्रिया बताइए।'
+            },
+            bgImage: 'assets/ayushman_bharat_bg.png'
+        },
+        {
+            id: 5, icon: <Icons.Briefcase />,
+            title: { en: 'First-job support', hi: 'पहली नौकरी सहायता' },
+            description: { en: 'Support for first-time employees', hi: 'पहली बार नौकरी करने वालों के लिए सहायता' },
+            query: {
+                en: 'Explain the PM Viksit Bharat Rozgar Yojana support for first-time employees and its eligibility requirements.',
+                hi: 'पहली बार नौकरी करने वालों के लिए PM विकसित भारत रोजगार योजना की सहायता और पात्रता बताइए।'
+            },
+            bgImage: 'assets/student_scholarship_bg.png'
+        }
     ];
 
     const TitleReveal = ({ text, color }) => {
@@ -650,15 +981,12 @@
     };
 
     function YojanaSetu() {
-        const [showSplash, setShowSplash] = useState(true);
+        const [showSplash] = useState(false);
         const [activeBgImage, setActiveBgImage] = useState(null);
-        const [sessions, setSessions] = useState(() => {
-            const saved = localStorage.getItem('yojana_setu_sessions');
-            return saved ? JSON.parse(saved) : [];
-        });
+        const [sessions, setSessions] = useState(readSavedSessions);
         const [currentSessionId, setCurrentSessionId] = useState(() => {
-            const saved = localStorage.getItem('yojana_setu_current_session_id');
-            return saved || null;
+            const saved = readStoredValue('yojana_setu_current_session_id');
+            return saved && sessions.some(session => session.id === saved) ? saved : null;
         });
         const [messages, setMessages] = useState([]);
         const [speakingMessageId, setSpeakingMessageId] = useState(null);
@@ -672,6 +1000,7 @@
 
         // New Layout & UI State
         const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+        const [mobileNavOpen, setMobileNavOpen] = useState(false);
         const [attachedFile, setAttachedFile] = useState(null);
         const [extractedText, setExtractedText] = useState('');
         const [ocrLoading, setOcrLoading] = useState(false);
@@ -682,11 +1011,6 @@
         const recognitionRef = useRef(null);
 
         const t = (key) => translations[language]?.[key] || translations['en'][key];
-
-        useEffect(() => {
-            const timer = setTimeout(() => setShowSplash(false), 3000);
-            return () => clearTimeout(timer);
-        }, []);
 
         useEffect(() => {
             const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -714,15 +1038,16 @@
 
         // Persist sessions to localStorage
         useEffect(() => {
-            localStorage.setItem('yojana_setu_sessions', JSON.stringify(sessions));
+            try { localStorage.setItem('yojana_setu_sessions', JSON.stringify(sessions.slice(0, 30))); }
+            catch (_) { /* Chat stays usable when browser storage is unavailable or full. */ }
         }, [sessions]);
 
         // Persist current active session ID
         useEffect(() => {
             if (currentSessionId) {
-                localStorage.setItem('yojana_setu_current_session_id', currentSessionId);
+                try { localStorage.setItem('yojana_setu_current_session_id', currentSessionId); } catch (_) { }
             } else {
-                localStorage.removeItem('yojana_setu_current_session_id');
+                try { localStorage.removeItem('yojana_setu_current_session_id'); } catch (_) { }
             }
         }, [currentSessionId]);
 
@@ -889,6 +1214,7 @@
         };
 
         const sendMessage = async (overrideValue = '') => {
+            if (isTyping) return;
             const queryText = (overrideValue || inputValue).trim();
             if (!queryText && !extractedText) return;
             setInputValue('');
@@ -947,7 +1273,7 @@
             setIsTyping(true);
 
             const botMessageId = 'bot_' + Date.now();
-            const botPlaceholderMsg = { id: botMessageId, content: '', isUser: false, timestamp: new Date() };
+                const botPlaceholderMsg = { id: botMessageId, content: '', sources: null, isUser: false, timestamp: new Date() };
             
             setSessions(prev => prev.map(s => {
                 if (s.id === sessionId) {
@@ -957,12 +1283,20 @@
             }));
 
             try {
-                const response = await fetch(`${API_BASE_URL}/api/chat/ask?message=${encodeURIComponent(finalQuery)}`, {
+                const response = await fetch(`${API_BASE_URL}/api/chat/ask`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'text/event-stream' },
+                    body: JSON.stringify({ message: finalQuery })
                 });
 
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                if (!response.ok) {
+                    let message = `Request failed (${response.status}). Please try again.`;
+                    try {
+                        const errorBody = await response.json();
+                        if (errorBody.message) message = errorBody.message;
+                    } catch (_) { }
+                    throw new Error(message);
+                }
                 
                 setIsTyping(false);
 
@@ -972,39 +1306,44 @@
                 let accumulatedText = '';
                 let buffer = '';
 
+                const handleSseEvent = (rawEvent) => {
+                    let eventName = 'message';
+                    const dataLines = [];
+                    rawEvent.split(/\r?\n/).forEach(line => {
+                        if (line.startsWith('event:')) eventName = line.substring(6).trim();
+                        if (line.startsWith('data:')) dataLines.push(line.substring(5).replace(/^ /, ''));
+                    });
+                    const data = dataLines.join('\n');
+                    if (eventName === 'sources') {
+                        try {
+                            const sources = JSON.parse(data);
+                            setSessions(prev => prev.map(s => s.id === sessionId ? {
+                                ...s,
+                                messages: s.messages.map(m => m.id === botMessageId ? { ...m, sources } : m)
+                            } : s));
+                        } catch (error) {
+                            console.warn('Could not read source links from the response.');
+                        }
+                    } else if (data) {
+                        accumulatedText += data;
+                        setSessions(prev => prev.map(s => s.id === sessionId ? {
+                            ...s,
+                            messages: s.messages.map(m => m.id === botMessageId ? { ...m, content: accumulatedText } : m)
+                        } : s));
+                    }
+                };
+
                 while (!done) {
                     const { value, done: readerDone } = await reader.read();
                     done = readerDone;
                     if (value) {
                         buffer += decoder.decode(value, { stream: !done });
-                        const lines = buffer.split('\n');
-                        buffer = lines.pop(); // Keep the last partial line in the buffer
-                        
-                        let updated = false;
-                        for (const line of lines) {
-                            if (line.startsWith('data:')) {
-                                let dataContent = line.substring(5);
-                                if (dataContent.startsWith(' ')) {
-                                    dataContent = dataContent.substring(1);
-                                }
-                                accumulatedText += dataContent;
-                                updated = true;
-                            }
-                        }
-                        
-                        if (updated) {
-                            setSessions(prev => prev.map(s => {
-                                if (s.id === sessionId) {
-                                    return {
-                                        ...s,
-                                        messages: s.messages.map(m => m.id === botMessageId ? { ...m, content: accumulatedText } : m)
-                                    };
-                                }
-                                return s;
-                            }));
-                        }
+                        const events = buffer.split(/\r?\n\r?\n/);
+                        buffer = events.pop();
+                        events.forEach(handleSseEvent);
                     }
                 }
+                if (buffer.trim()) handleSseEvent(buffer);
 
                 if (voiceEnabled && window.speechSynthesis && accumulatedText) {
                     speakText(accumulatedText, botMessageId);
@@ -1013,7 +1352,9 @@
             } catch (error) {
                 console.error('API Error:', error);
                 setIsTyping(false);
-                const errorMessage = "I'm having trouble connecting to the server right now. Please ensure the backend is running.";
+                const errorMessage = error instanceof TypeError
+                    ? "I'm having trouble connecting to the server right now. Please try again shortly."
+                    : (error.message || "I couldn't process that request. Please try again.");
                 setSessions(prev => prev.map(s => {
                     if (s.id === sessionId) {
                         return {
@@ -1196,13 +1537,14 @@
 
             <motion.div 
                 className="app-container"
-                initial={{ opacity: 0, scale: 0.97, y: 20 }}
+                initial={false}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 3.1, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 0.2 }}
             >
+                {mobileNavOpen && <button className="mobile-nav-backdrop" aria-label="Close chat history" onClick={() => setMobileNavOpen(false)} />}
                 {/* Collapsible Sidebar Wrapper with Motion */}
                 <motion.div 
-                    className="sidebar"
+                    className={`sidebar ${mobileNavOpen ? 'sidebar-open' : ''}`}
                     animate={{ width: sidebarCollapsed ? 76 : 280 }}
                     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                 >
@@ -1229,14 +1571,14 @@
                             </motion.h1>
                         )}
                     </div>
-                    <button onClick={startNewChat} style={{
+                    <button onClick={() => { startNewChat(); setMobileNavOpen(false); }} style={{
                         display: 'flex', alignItems: 'center', justifyContent: sidebarCollapsed ? 'center' : 'flex-start', gap: '12px', padding: '12px', borderRadius: '14px',
                         background: 'var(--bg-hover)', border: '1px solid var(--border-color)', color: 'var(--text-primary)',
                         cursor: 'pointer', fontWeight: '600', fontSize: '14px', transition: 'all 0.3s ease', marginBottom: '24px',
                         boxShadow: 'var(--shadow-bubble)', width: '100%', whiteSpace: 'nowrap', overflow: 'hidden'
                     }} onMouseOver={e => e.currentTarget.style.borderColor = 'var(--primary)'} onMouseOut={e => e.currentTarget.style.borderColor = 'var(--border-color)'}>
                         <Icons.Plus style={{ flexShrink: 0 }} />
-                        {!sidebarCollapsed && <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }}>New Chat</motion.span>}
+                        {!sidebarCollapsed && <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }}>{t('newChat')}</motion.span>}
                     </button>
 
                     <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -1246,7 +1588,7 @@
                                 animate={{ opacity: 1 }}
                                 style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}
                             >
-                                Recent Chats
+                                {t('recentChats')}
                             </motion.p>
                         )}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', overflowY: 'auto', paddingRight: '4px' }}>
@@ -1254,7 +1596,7 @@
                                 sessions.map(session => (
                                     <div 
                                         key={session.id} 
-                                        onClick={() => setCurrentSessionId(session.id)}
+                                        onClick={() => { setCurrentSessionId(session.id); setMobileNavOpen(false); }}
                                         style={{ 
                                             display: 'flex', 
                                             alignItems: 'center', 
@@ -1319,7 +1661,7 @@
                                 ))
                             ) : (
                                 !sidebarCollapsed && (
-                                    <p style={{ fontSize: '13px', color: 'var(--text-secondary)', fontStyle: 'italic', paddingLeft: '8px' }}>No recent chats</p>
+                                    <p style={{ fontSize: '13px', color: 'var(--text-secondary)', fontStyle: 'italic', paddingLeft: '8px' }}>{t('noRecentChats')}</p>
                                 )
                             )}
                         </div>
@@ -1331,10 +1673,13 @@
                         padding: '16px 32px', display: 'flex', justifyContent: 'flex-end', alignItems: 'center',
                         zIndex: 10, background: 'transparent'
                     }}>
+                        <button className="btn-icon mobile-nav-toggle" onClick={() => setMobileNavOpen(true)} aria-label="Open chat history" aria-expanded={mobileNavOpen}>
+                            <Icons.Menu />
+                        </button>
                         {/* Connected Status badge */}
                         <div className="status-badge">
                             <span className="status-dot"></span>
-                            <span>Connected</span>
+                            <span>{t('chatAvailable')}</span>
                         </div>
 
                         <motion.div 
@@ -1375,9 +1720,9 @@
                         </motion.div>
                     </header>
 
-                    <div ref={chatBoxRef} style={{ flex: 1, overflowY: 'auto', padding: '32px 28px', scrollBehavior: 'smooth' }}>
+                    <div ref={chatBoxRef} className="chat-scroll-area" style={{ flex: 1, overflowY: 'auto', padding: '32px 28px', scrollBehavior: 'smooth' }}>
                         {messages.length === 0 ? (
-                            <motion.div 
+                            <motion.div className="welcome-screen"
                                 initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3, duration: 0.5 }}
                                 style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', maxWidth: '640px', margin: '0 auto' }}
                             >
@@ -1406,7 +1751,7 @@
                                                 borderColor: 'var(--primary)'
                                             }}
                                             whileTap={{ scale: 0.98 }}
-                                            onClick={() => { setInputValue(s.query); setTimeout(sendMessage, 100); }}
+                                            onClick={() => { setInputValue(s.query[language]); setTimeout(() => sendMessage(s.query[language]), 0); }}
                                             style={{
                                                 padding: '20px', borderRadius: '16px', border: '1px solid var(--border-color)',
                                                 background: 'var(--bg-app)', display: 'flex', alignItems: 'flex-start', gap: '16px',
@@ -1417,8 +1762,8 @@
                                         >
                                             <div style={{ color: 'var(--primary)', background: 'var(--bg-hover)', padding: '10px', borderRadius: '10px' }}>{s.icon}</div>
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                                <span style={{ fontSize: '15px', fontWeight: '700' }}>{s.title}</span>
-                                                <span style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>{s.query}</span>
+                                                <span style={{ fontSize: '15px', fontWeight: '700' }}>{s.title[language]}</span>
+                                                <span style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: '1.4' }}>{s.description[language]}</span>
                                             </div>
                                         </motion.button>
                                     ))}
@@ -1499,16 +1844,33 @@
                                                             </div>
                                                         )}
 
-                                                        <div style={{ flex: 1, whiteSpace: msg.isUser ? 'pre-wrap' : 'normal' }}>
-                                                            {!msg.isUser ? (
-                                                                <div 
-                                                                    className="markdown-content"
-                                                                    dangerouslySetInnerHTML={{ __html: typeof marked !== 'undefined' ? marked.parse(msg.content) : msg.content }}
-                                                                />
-                                                            ) : (
-                                                                msg.content
-                                                            )}
+                                                        <div style={{ flex: 1, whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>
+                                                            {msg.content}
                                                         </div>
+                                                        {!msg.isUser && msg.sources && (
+                                                            <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px solid var(--border-color)', fontSize: '13px' }}>
+                                                                <div style={{ fontWeight: '700', marginBottom: '7px' }}>{language === 'hi' ? 'स्रोत' : 'Sources'}</div>
+                                                                {msg.sources.officialSources?.length > 0 ? (
+                                                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                                                        {msg.sources.officialSources.map(source => (
+                                                                            <a key={source.url} href={source.url} target="_blank" rel="noopener noreferrer"
+                                                                               style={{ color: 'var(--primary)', textDecoration: 'underline', overflowWrap: 'anywhere' }}>
+                                                                                {source.title}
+                                                                            </a>
+                                                                        ))}
+                                                                    </div>
+                                                                ) : (
+                                                                    <div style={{ color: 'var(--text-secondary)' }}>
+                                                                        {language === 'hi' ? 'इस उत्तर के लिए कोई अनुमोदित सरकारी वेब स्रोत सत्यापित नहीं हुआ।' : 'No allowlisted government web source was verified for this answer.'}
+                                                                    </div>
+                                                                )}
+                                                                {msg.sources.documentSources?.length > 0 && (
+                                                                    <div style={{ marginTop: '8px', color: 'var(--text-secondary)' }}>
+                                                                        {language === 'hi' ? 'स्थानीय दस्तावेज़: ' : 'Local documents: '}{msg.sources.documentSources.join(', ')}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
                                                         {!msg.isUser && msg.content && (
                                                             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px', borderTop: '1px solid var(--border-color)', paddingTop: '8px' }}>
                                                                 <button 
@@ -1580,7 +1942,7 @@
                         )}
                     </div>
 
-                    <motion.div 
+                    <motion.div className="composer-footer"
                         initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5 }}
                         style={{ padding: '20px 32px 28px', background: 'transparent', zIndex: 10 }}
                     >
@@ -1670,7 +2032,7 @@
                             </motion.button>
                         </div>
                         <div style={{ textAlign: 'center', marginTop: '16px', fontSize: '13px', color: 'var(--text-secondary)', fontWeight: '600' }}>
-                            Yojana-Setu is an AI assistant and can make mistakes. Consider verifying important information.
+                            {t('privacyTip')} {language === 'hi' ? 'AI की जानकारी में गलती हो सकती है। आधिकारिक स्रोत से जाँचें।' : 'AI can make mistakes. Verify important details with official sources.'}
                         </div>
                     </motion.div>
                 </div>
